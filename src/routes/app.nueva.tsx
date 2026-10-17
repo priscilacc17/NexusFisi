@@ -13,7 +13,7 @@ import { dataService, useData } from "@/lib/data/store";
 import { useCurrentUser } from "@/lib/session";
 
 export const Route = createFileRoute("/app/nueva")({
-  validateSearch: (s: Record<string, unknown>) => ({ tipo: typeof s.tipo === "string" ? s.tipo : undefined }),
+  validateSearch: (s: Record<string, unknown>): { tipo?: string } => (typeof s["tipo"] === "string" ? { tipo: s["tipo"] } : {}),
   head: () => ({ meta: [{ title: "Nueva solicitud · NexusFisi" }, { name: "description", content: "Registra una nueva solicitud académica." }] }),
   component: NewRequest,
 });
@@ -24,6 +24,8 @@ const schema = z.object({
   description: z.string().trim().min(15, "Describe tu solicitud (mínimo 15 caracteres).").max(1500, "Máximo 1500 caracteres."),
 });
 
+type FormErrors = Partial<Record<"typeId" | "subject" | "description" | "files", string>>;
+
 function NewRequest() {
   const user = useCurrentUser()!;
   const { tipo } = Route.useSearch();
@@ -31,7 +33,7 @@ function NewRequest() {
   const types = useData((s) => s.types).filter((t) => t.active);
   const [form, setForm] = useState({ typeId: tipo ?? "", subject: "", description: "" });
   const [files, setFiles] = useState<PickedFile[]>([]);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<FormErrors>({});
   const [saving, setSaving] = useState(false);
   const type = types.find((t) => t.id === form.typeId);
 
@@ -40,8 +42,8 @@ function NewRequest() {
   const submit = (e: FormEvent) => {
     e.preventDefault();
     const res = schema.safeParse(form);
-    const errs: Record<string, string> = {};
-    if (!res.success) res.error.issues.forEach((i) => (errs[String(i.path[0])] = i.message));
+    const errs: FormErrors = {};
+    if (!res.success) res.error.issues.forEach((i) => (errs[i.path[0] as keyof FormErrors] ??= i.message));
     if (files.length === 0) errs.files = "Adjunta al menos un documento.";
     setErrors(errs);
     if (Object.keys(errs).length) return;

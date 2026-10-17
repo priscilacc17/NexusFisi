@@ -73,11 +73,13 @@ function Notifications({ user }: { user: User }) {
         </div>
         <div className="max-h-80 overflow-y-auto">
           {mine.length === 0 ? <p className="p-6 text-center text-sm text-muted-foreground">Sin notificaciones</p> :
-            mine.map((n) => (
-              <Link key={n.id} to="/app/solicitudes/$id" params={{ id: n.requestId ?? "" }} className={cn("block border-b px-4 py-3 text-sm last:border-0 hover:bg-muted", !n.read && "bg-accent/10")}>
-                <p>{n.text}</p><p className="mt-0.5 text-xs text-muted-foreground">{fmtDate(n.date, true)}</p>
-              </Link>
-            ))}
+            mine.map((n) => {
+              const cls = cn("block w-full border-b px-4 py-3 text-left text-sm last:border-0 hover:bg-muted", !n.read && "bg-accent/10");
+              const body = <><p className="flex items-start gap-2">{!n.read && <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-accent" />}{n.text}</p><p className="mt-0.5 text-xs text-muted-foreground">{fmtDate(n.date, true)}</p></>;
+              return n.requestId
+                ? <Link key={n.id} to="/app/solicitudes/$id" params={{ id: n.requestId }} onClick={() => dataService.markRead(n.id)} className={cls}>{body}</Link>
+                : <button key={n.id} type="button" onClick={() => dataService.markRead(n.id)} className={cls}>{body}</button>;
+            })}
         </div>
       </PopoverContent>
     </Popover>

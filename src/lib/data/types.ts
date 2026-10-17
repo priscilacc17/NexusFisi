@@ -9,9 +9,9 @@ export interface User {
   email: string;
   password: string; // SOLO demostración: nunca almacenar contraseñas así en producción
   role: Role;
-  code?: string; // código de estudiante
-  cycle?: string;
-  area?: string;
+  code?: string | undefined; // código de estudiante
+  cycle?: string | undefined;
+  area?: string | undefined;
 }
 
 export const STATUSES = [
@@ -47,9 +47,9 @@ export interface HistoryEntry {
   date: string;
   userId: string;
   action: string;
-  from?: Status;
-  to?: Status;
-  note?: string;
+  from?: Status | undefined;
+  to?: Status | undefined;
+  note?: string | undefined;
 }
 
 export interface Message {
@@ -77,8 +77,8 @@ export interface Request {
   status: Status;
   createdAt: string;
   updatedAt: string;
-  assigneeId?: string;
-  response?: string;
+  assigneeId?: string | undefined;
+  response?: string | undefined;
   attachments: Attachment[];
   observations: Observation[];
   history: HistoryEntry[];
@@ -90,7 +90,7 @@ export interface Notification {
   userId: string;
   date: string;
   text: string;
-  requestId?: string;
+  requestId?: string | undefined;
   read: boolean;
 }
 

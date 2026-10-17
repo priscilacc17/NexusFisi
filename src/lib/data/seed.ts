@@ -41,7 +41,7 @@ function req(n: number, typeId: string, studentId: string, subject: string, stat
   return {
     id: code, code, typeId, studentId, subject,
     description: "Solicito por favor la atención del presente trámite según los requisitos indicados.",
-    status, createdAt: d(daysAgo, 9), updatedAt: history[history.length - 1].date,
+    status, createdAt: d(daysAgo, 9), updatedAt: history.at(-1)!.date,
     attachments: [{ id: `${code}-a1`, name: "dni_escaneado.pdf", size: 245000, uploadedAt: d(daysAgo, 9), uploadedBy: studentId }],
     observations: [], messages: [], history, ...extra,
   };

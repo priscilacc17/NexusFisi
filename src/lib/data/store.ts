@@ -4,7 +4,7 @@
 import { useSyncExternalStore } from "react";
 import { createSeed } from "./seed";
 import type { DataState, ProcedureType, Request, Status } from "./types";
-import { canTransition } from "./workflow";
+import { transitionBlocker } from "./workflow";
 
 const KEY = "nexusfisi:data:v1";
 let state: DataState = load();
@@ -43,7 +43,12 @@ function updateRequest(id: string, fn: (r: Request) => Request, notify?: { userI
     notifications: [...notes, ...state.notifications],
   });
 }
-const staff = () => state.users.filter((u) => u.role === "personal");
+const staff = () => state.users.filter((u) => u.role === "personal" || u.role === "admin");
+const findRequest = (id: string) => {
+  const r = state.requests.find((x) => x.id === id);
+  if (!r) throw new Error("Solicitud no encontrada");
+  return r;
+};
 
 export const dataService = {
   createRequest(input: { typeId: string; studentId: string; subject: string; description: string; files: { name: string; size: number }[] }) {
@@ -63,8 +68,9 @@ export const dataService = {
     return r;
   },
   changeStatus(id: string, to: Status, userId: string, note?: string) {
-    const r = state.requests.find((x) => x.id === id);
-    if (!r || !canTransition(r.status, to)) throw new Error("Transición no permitida");
+    const r = findRequest(id);
+    const reason = transitionBlocker(r, to, note);
+    if (reason) throw new Error(reason);
     updateRequest(id, (r) => ({
       ...r, status: to,
       observations: to === "Observada" && note ? [...r.observations, { id: uid(), date: now(), userId, text: note, resolved: false }] : r.observations,
@@ -72,7 +78,8 @@ export const dataService = {
     }), [{ userId: r.studentId, text: `Tu solicitud ${r.code} cambió a "${to}".` }]);
   },
   assign(id: string, assigneeId: string, userId: string) {
-    const r = state.requests.find((x) => x.id === id)!;
+    const r = findRequest(id);
+    if (r.status !== "En evaluación" && r.status !== "Asignada" && r.status !== "En atención") throw new Error("Solo se asignan solicitudes en evaluación o en curso.");
     const name = state.users.find((u) => u.id === assigneeId)?.name;
     updateRequest(id, (r) => ({
       ...r, assigneeId,
@@ -81,12 +88,14 @@ export const dataService = {
     }), [{ userId: assigneeId, text: `Se te asignó la solicitud ${r.code}.` }]);
   },
   respond(id: string, response: string, userId: string) {
-    const r = state.requests.find((x) => x.id === id)!;
+    const r = findRequest(id);
+    if (r.status !== "En atención") throw new Error("La respuesta se registra cuando la solicitud está en atención.");
     updateRequest(id, (r) => ({ ...r, response, history: [...r.history, { id: uid(), date: now(), userId, action: "Respuesta registrada", note: response }] }),
       [{ userId: r.studentId, text: `Hay una respuesta en tu solicitud ${r.code}.` }]);
   },
   submitCorrection(id: string, userId: string, note: string, files: { name: string; size: number }[]) {
-    const r = state.requests.find((x) => x.id === id)!;
+    const r = findRequest(id);
+    if (r.status !== "Observada" || r.studentId !== userId) throw new Error("Solo el estudiante puede corregir una solicitud observada.");
     updateRequest(id, (r) => ({
       ...r, status: "En evaluación",
       observations: r.observations.map((o) => ({ ...o, resolved: true })),
@@ -95,16 +104,19 @@ export const dataService = {
     }), staff().map((u) => ({ userId: u.id, text: `${r.code}: el estudiante envió una corrección.` })));
   },
   addMessage(id: string, userId: string, text: string) {
-    const r = state.requests.find((x) => x.id === id)!;
+    const r = findRequest(id);
     const sender = state.users.find((u) => u.id === userId)!;
     const targets = sender.role === "estudiante" ? (r.assigneeId ? [r.assigneeId] : staff().map((u) => u.id)) : [r.studentId];
     updateRequest(id, (r) => ({ ...r, messages: [...r.messages, { id: uid(), date: now(), userId, text }] }),
       targets.map((t) => ({ userId: t, text: `Nuevo mensaje en ${r.code}.` })));
   },
+  markRead(notificationId: string) {
+    commit({ ...state, notifications: state.notifications.map((n) => (n.id === notificationId ? { ...n, read: true } : n)) });
+  },
   markAllRead(userId: string) {
     commit({ ...state, notifications: state.notifications.map((n) => (n.userId === userId ? { ...n, read: true } : n)) });
   },
-  saveType(t: Omit<ProcedureType, "id"> & { id?: string }) {
+  saveType(t: Omit<ProcedureType, "id"> & { id?: string | undefined }) {
     const exists = t.id && state.types.some((x) => x.id === t.id);
     commit({ ...state, types: exists ? state.types.map((x) => (x.id === t.id ? (t as ProcedureType) : x)) : [...state.types, { ...t, id: uid() }] });
   },

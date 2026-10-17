@@ -12,9 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppAdminRouteImport } from './routes/app.admin'
+import { Route as AppBandejaRouteImport } from './routes/app.bandeja'
 import { Route as AppNuevaRouteImport } from './routes/app.nueva'
 import { Route as AppTramitesRouteImport } from './routes/app.tramites'
 import { Route as AppSolicitudesIndexRouteImport } from './routes/app.solicitudes.index'
+import { Route as AppSolicitudesIdRouteImport } from './routes/app.solicitudes.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -29,6 +32,16 @@ const AppRoute = AppRouteImport.update({
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminRoute = AppAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBandejaRoute = AppBandejaRouteImport.update({
+  id: '/bandeja',
+  path: '/bandeja',
   getParentRoute: () => AppRoute,
 } as any)
 const AppNuevaRoute = AppNuevaRouteImport.update({
@@ -46,29 +59,43 @@ const AppSolicitudesIndexRoute = AppSolicitudesIndexRouteImport.update({
   path: '/solicitudes/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSolicitudesIdRoute = AppSolicitudesIdRouteImport.update({
+  id: '/solicitudes/$id',
+  path: '/solicitudes/$id',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
+  '/app/admin': typeof AppAdminRoute
+  '/app/bandeja': typeof AppBandejaRoute
   '/app/nueva': typeof AppNuevaRoute
   '/app/tramites': typeof AppTramitesRoute
   '/app/': typeof AppIndexRoute
+  '/app/solicitudes/$id': typeof AppSolicitudesIdRoute
   '/app/solicitudes/': typeof AppSolicitudesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/app/admin': typeof AppAdminRoute
+  '/app/bandeja': typeof AppBandejaRoute
   '/app/nueva': typeof AppNuevaRoute
   '/app/tramites': typeof AppTramitesRoute
   '/app': typeof AppIndexRoute
+  '/app/solicitudes/$id': typeof AppSolicitudesIdRoute
   '/app/solicitudes': typeof AppSolicitudesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
+  '/app/admin': typeof AppAdminRoute
+  '/app/bandeja': typeof AppBandejaRoute
   '/app/nueva': typeof AppNuevaRoute
   '/app/tramites': typeof AppTramitesRoute
   '/app/': typeof AppIndexRoute
+  '/app/solicitudes/$id': typeof AppSolicitudesIdRoute
   '/app/solicitudes/': typeof AppSolicitudesIndexRoute
 }
 export interface FileRouteTypes {
@@ -76,19 +103,33 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/app'
+    | '/app/admin'
+    | '/app/bandeja'
     | '/app/nueva'
     | '/app/tramites'
     | '/app/'
+    | '/app/solicitudes/$id'
     | '/app/solicitudes/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/app/nueva' | '/app/tramites' | '/app' | '/app/solicitudes'
+  to:
+    | '/'
+    | '/app/admin'
+    | '/app/bandeja'
+    | '/app/nueva'
+    | '/app/tramites'
+    | '/app'
+    | '/app/solicitudes/$id'
+    | '/app/solicitudes'
   id:
     | '__root__'
     | '/'
     | '/app'
+    | '/app/admin'
+    | '/app/bandeja'
     | '/app/nueva'
     | '/app/tramites'
     | '/app/'
+    | '/app/solicitudes/$id'
     | '/app/solicitudes/'
   fileRoutesById: FileRoutesById
 }
@@ -120,6 +161,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/admin': {
+      id: '/app/admin'
+      path: '/admin'
+      fullPath: '/app/admin'
+      preLoaderRoute: typeof AppAdminRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/bandeja': {
+      id: '/app/bandeja'
+      path: '/bandeja'
+      fullPath: '/app/bandeja'
+      preLoaderRoute: typeof AppBandejaRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/nueva': {
       id: '/app/nueva'
       path: '/nueva'
@@ -141,20 +196,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSolicitudesIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/solicitudes/$id': {
+      id: '/app/solicitudes/$id'
+      path: '/solicitudes/$id'
+      fullPath: '/app/solicitudes/$id'
+      preLoaderRoute: typeof AppSolicitudesIdRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
+  AppAdminRoute: typeof AppAdminRoute
+  AppBandejaRoute: typeof AppBandejaRoute
   AppNuevaRoute: typeof AppNuevaRoute
   AppTramitesRoute: typeof AppTramitesRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppSolicitudesIdRoute: typeof AppSolicitudesIdRoute
   AppSolicitudesIndexRoute: typeof AppSolicitudesIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAdminRoute: AppAdminRoute,
+  AppBandejaRoute: AppBandejaRoute,
   AppNuevaRoute: AppNuevaRoute,
   AppTramitesRoute: AppTramitesRoute,
   AppIndexRoute: AppIndexRoute,
+  AppSolicitudesIdRoute: AppSolicitudesIdRoute,
   AppSolicitudesIndexRoute: AppSolicitudesIndexRoute,
 }
 

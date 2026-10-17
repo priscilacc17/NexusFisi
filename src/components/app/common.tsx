@@ -1,6 +1,11 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
-import { Inbox } from "lucide-react";
+import { Inbox, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
+  AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 import type { Status } from "@/lib/data/types";
 
@@ -23,7 +28,7 @@ export function StatusBadge({ status }: { status: Status }) {
   );
 }
 
-export function PageHeader({ title, subtitle, action }: { title: string; subtitle?: string; action?: ReactNode }) {
+export function PageHeader({ title, subtitle, action }: { title: string; subtitle?: string | undefined; action?: ReactNode }) {
   return (
     <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
       <div className="min-w-0">
@@ -68,3 +73,51 @@ export const fmtDate = (iso: string, time = false) =>
 export const fmtSize = (b: number) => (b > 1e6 ? `${(b / 1e6).toFixed(1)} MB` : `${Math.max(1, Math.round(b / 1e3))} KB`);
 
 export const selectClass = "h-9 w-full rounded-md border border-input bg-card px-3 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
+export function FieldError({ children }: { children?: string | undefined }) {
+  return children ? <p role="alert" className="text-sm text-destructive">{children}</p> : null;
+}
+
+export function LoadingState({ text = "Cargando…" }: { text?: string }) {
+  return (
+    <div className="flex items-center justify-center gap-2 py-16 text-sm text-muted-foreground">
+      <Loader2 className="h-4 w-4 animate-spin" />{text}
+    </div>
+  );
+}
+
+// Ejecuta una acción del servicio de datos y muestra éxito o error de forma uniforme.
+export function runAction(fn: () => void, success: string) {
+  try {
+    fn();
+    toast.success(success);
+    return true;
+  } catch (e) {
+    toast.error(e instanceof Error ? e.message : "No se pudo completar la acción.");
+    return false;
+  }
+}
+
+// Botón que pide confirmación antes de ejecutar una acción importante.
+export function ConfirmAction({ trigger, title, description, confirmLabel = "Confirmar", onConfirm, children, disabled }: {
+  trigger: ReactNode; title: string; description?: string; confirmLabel?: string;
+  onConfirm: () => boolean | void; children?: ReactNode; disabled?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger asChild disabled={disabled}>{trigger}</AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          {description && <AlertDialogDescription>{description}</AlertDialogDescription>}
+        </AlertDialogHeader>
+        {children}
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction onClick={(e) => { e.preventDefault(); if (onConfirm() !== false) setOpen(false); }}>{confirmLabel}</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}

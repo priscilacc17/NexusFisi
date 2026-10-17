@@ -1,17 +1,19 @@
 import { useRef } from "react";
 import { Paperclip, X } from "lucide-react";
+import { toast } from "sonner";
 import { fmtSize } from "./common";
 
 export type PickedFile = { name: string; size: number };
 const MAX = 5 * 1024 * 1024;
+const EXT = /\.(pdf|jpe?g|png)$/i;
 
 // Solo registra nombre y tamaño (demo local): el archivo no se sube a ningún servidor.
 export function FilePicker({ files, onChange }: { files: PickedFile[]; onChange: (f: PickedFile[]) => void }) {
   const ref = useRef<HTMLInputElement>(null);
   const add = (list: FileList | null) => {
     if (!list) return;
-    const ok = Array.from(list).filter((f) => f.size <= MAX).map((f) => ({ name: f.name, size: f.size }));
-    if (ok.length < list.length) alert("Algunos archivos superan 5 MB y no se agregaron.");
+    const ok = Array.from(list).filter((f) => f.size <= MAX && EXT.test(f.name)).map((f) => ({ name: f.name, size: f.size }));
+    if (ok.length < list.length) toast.error("Algunos archivos no se agregaron: solo PDF, JPG o PNG de hasta 5 MB.");
     onChange([...files, ...ok]);
     if (ref.current) ref.current.value = "";
   };
