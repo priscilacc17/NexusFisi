@@ -28,7 +28,7 @@ export function CorrectionForm({ request, user }: { request: Request; user: User
       <div className="mt-4 space-y-3">
         <div className="space-y-1.5">
           <Label htmlFor="correction">Detalle de la corrección *</Label>
-          <Textarea id="correction" rows={3} className="bg-card" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Ej. Adjunto la carta firmada por el jefe de servicio." />
+          <Textarea id="correction" rows={3} className="bg-card" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Ej. Adjunto la carta firmada por el representante de la empresa." />
           <FieldError>{error}</FieldError>
         </div>
         <div className="space-y-1.5">

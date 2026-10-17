@@ -35,7 +35,7 @@ function Brand() {
       <div className="grid h-9 w-9 place-items-center rounded-lg bg-brand font-bold text-primary-foreground" style={{ fontFamily: "var(--font-display)" }}>NF</div>
       <div>
         <p className="font-bold leading-none" style={{ fontFamily: "var(--font-display)" }}>NexusFisi</p>
-        <p className="text-[11px] opacity-70">Facultad de Fisioterapia</p>
+        <p className="text-[11px] opacity-70">FISI · UNMSM</p>
       </div>
     </div>
   );

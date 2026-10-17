@@ -1,19 +1,18 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
-import { Loader2, ShieldAlert } from "lucide-react";
+import { BellRing, FileCheck2, Loader2, Route as RouteIcon, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { login } from "@/lib/session";
-import hero from "@/assets/login-hero.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "NexusFisi · Trámites académicos de Fisioterapia" },
-      { name: "description", content: "Registra y da seguimiento a tus solicitudes y trámites académicos de la Facultad de Fisioterapia." },
+      { title: "NexusFisi · Trámites académicos de la FISI · UNMSM" },
+      { name: "description", content: "Registra y da seguimiento a tus solicitudes y trámites académicos de la Facultad de Ingeniería de Sistemas e Informática de la UNMSM." },
       { property: "og:title", content: "NexusFisi · Trámites académicos" },
-      { property: "og:description", content: "Plataforma de solicitudes y trámites de la Facultad de Fisioterapia." },
+      { property: "og:description", content: "Plataforma de solicitudes y trámites de la FISI · UNMSM." },
     ],
   }),
   component: LoginPage,
@@ -47,17 +46,26 @@ function LoginPage() {
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="relative hidden overflow-hidden bg-brand lg:block">
-        <img src={hero} alt="Estudiantes de fisioterapia en clase práctica" className="absolute inset-0 h-full w-full object-cover opacity-40 mix-blend-luminosity" width={1280} height={1600} />
         <div className="relative flex h-full flex-col justify-end p-12 text-primary-foreground">
+          <p className="mb-6 text-sm font-semibold uppercase tracking-widest opacity-80">FISI · UNMSM</p>
           <h2 className="text-4xl font-bold leading-tight">Tus trámites académicos,<br />claros y a tiempo.</h2>
-          <p className="mt-4 max-w-md opacity-85">Registra solicitudes, adjunta documentos y sigue cada paso de tu expediente en la Facultad de Fisioterapia.</p>
+          <p className="mt-4 max-w-md opacity-85">Registra solicitudes, adjunta documentos y sigue cada paso de tu expediente en la Facultad de Ingeniería de Sistemas e Informática.</p>
+          <ul className="mt-8 space-y-3 text-sm">
+            {[
+              { icon: FileCheck2, text: "Consulta los requisitos y registra tu solicitud en línea" },
+              { icon: RouteIcon, text: "Sigue el estado y el historial de tu expediente" },
+              { icon: BellRing, text: "Recibe avisos y mensajes del personal administrativo" },
+            ].map((f) => (
+              <li key={f.text} className="flex items-center gap-3"><span className="grid h-8 w-8 place-items-center rounded-lg bg-white/15"><f.icon className="h-4 w-4" /></span>{f.text}</li>
+            ))}
+          </ul>
         </div>
       </div>
       <div className="flex items-center justify-center p-6">
         <div className="w-full max-w-sm">
           <div className="mb-8 flex items-center gap-3">
             <div className="grid h-11 w-11 place-items-center rounded-xl bg-brand font-bold text-primary-foreground">NF</div>
-            <div><h1 className="text-2xl font-bold">NexusFisi</h1><p className="text-sm text-muted-foreground">Facultad de Fisioterapia</p></div>
+            <div><h1 className="text-2xl font-bold">NexusFisi</h1><p className="text-sm text-muted-foreground">FISI · UNMSM</p></div>
           </div>
           <form onSubmit={submit} className="space-y-4" noValidate>
             <div className="space-y-1.5"><Label htmlFor="email">Correo institucional</Label><Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="nombre@nexusfisi.edu" /></div>

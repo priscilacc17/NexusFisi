@@ -6,7 +6,7 @@ import { createSeed } from "./seed";
 import type { DataState, ProcedureType, Request, Status } from "./types";
 import { transitionBlocker } from "./workflow";
 
-const KEY = "nexusfisi:data:v1";
+const KEY = "nexusfisi:data:v2";
 let state: DataState = load();
 const listeners = new Set<() => void>();
 

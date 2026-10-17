@@ -1,6 +1,6 @@
 # NexusFisi Hub
 
-Desarrolla una aplicación web responsive llamada **NexusFisi**, una plataforma para gestionar y dar seguimiento a solicitudes y trámites académicos de una facultad de Fisioterapia.
+Desarrolla una aplicación web responsive llamada **NexusFisi**, una plataforma para gestionar y dar seguimiento a solicitudes y trámites académicos de la Facultad de Ingeniería de Sistemas e Informática (FISI) de la Universidad Nacional Mayor de San Marcos (UNMSM).
 
 ### 1. Objetivo
 Crear un MVP funcional, moderno y fácil de usar para estudiantes y personal administrativo. Prioriza las funciones esenciales y evita implementar características innecesarias que aumenten la complejidad.

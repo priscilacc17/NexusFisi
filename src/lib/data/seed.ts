@@ -19,7 +19,7 @@ export const types: DataState["types"] = [
   { id: "t1", name: "Constancia de estudios", description: "Documento que acredita tu matrícula vigente en la facultad.", requirements: ["Matrícula vigente", "DNI escaneado"], days: 3, active: true },
   { id: "t2", name: "Rectificación de matrícula", description: "Solicitud para agregar o retirar cursos dentro del plazo establecido.", requirements: ["Ficha de matrícula", "Justificación escrita"], days: 5, active: true },
   { id: "t3", name: "Convalidación de cursos", description: "Reconocimiento de cursos aprobados en otra institución o plan.", requirements: ["Certificado de notas", "Sílabos visados", "Resolución de traslado"], days: 15, active: true },
-  { id: "t4", name: "Prácticas preprofesionales", description: "Inscripción y aprobación de la sede de prácticas clínicas.", requirements: ["Carta de aceptación de la sede", "Seguro vigente", "Récord académico"], days: 7, active: true },
+  { id: "t4", name: "Prácticas preprofesionales", description: "Inscripción y aprobación de la empresa o institución donde realizarás tus prácticas preprofesionales.", requirements: ["Carta de aceptación de la empresa", "Plan de prácticas firmado", "Récord académico"], days: 7, active: true },
   { id: "t5", name: "Justificación de inasistencia", description: "Justificación por motivos de salud u otros debidamente acreditados.", requirements: ["Certificado médico o documento sustentatorio"], days: 3, active: true },
   { id: "t6", name: "Reserva de matrícula", description: "Suspensión temporal de estudios por un periodo académico.", requirements: ["Solicitud firmada", "Constancia de no adeudo"], days: 10, active: true },
 ];
@@ -49,16 +49,16 @@ function req(n: number, typeId: string, studentId: string, subject: string, stat
 
 export const requests: Request[] = [
   req(1, "t1", "u1", "Constancia para beca", "Registrada", 1),
-  req(2, "t4", "u1", "Prácticas en Hospital Rebagliati", "Observada", 6, {
-    observations: [{ id: "o1", date: d(4, 15), userId: "u3", text: "La carta de aceptación no tiene firma del jefe de servicio. Adjunte una versión firmada.", resolved: false }],
+  req(2, "t4", "u1", "Prácticas preprofesionales en desarrollo de software", "Observada", 6, {
+    observations: [{ id: "o1", date: d(4, 15), userId: "u3", text: "La carta de aceptación no tiene la firma del representante de la empresa. Adjunte una versión firmada.", resolved: false }],
     messages: [
       { id: "m1", date: d(4, 15), userId: "u3", text: "Hola Lucía, revisa la observación registrada por favor." },
-      { id: "m2", date: d(3, 9), userId: "u1", text: "Entendido, estoy gestionando la firma en la sede." },
+      { id: "m2", date: d(3, 9), userId: "u1", text: "Entendido, estoy gestionando la firma en la empresa." },
     ],
   }),
-  req(3, "t3", "u1", "Convalidación de Anatomía I", "En atención", 12, { assigneeId: "u4" }),
+  req(3, "t3", "u1", "Convalidación de Algorítmica I", "En atención", 12, { assigneeId: "u4" }),
   req(4, "t5", "u1", "Inasistencia por cita médica", "Resuelta", 20, { assigneeId: "u3", response: "Se aprueba la justificación de inasistencia del 02/10. Se comunicó al docente." }),
-  req(5, "t2", "u2", "Retiro de curso Biomecánica", "En evaluación", 3),
+  req(5, "t2", "u2", "Retiro de curso Base de Datos II", "En evaluación", 3),
   req(6, "t6", "u2", "Reserva semestre 2026-II", "Asignada", 8, { assigneeId: "u3" }),
   req(7, "t1", "u2", "Constancia para trabajo", "Cerrada", 30, { assigneeId: "u3", response: "Constancia emitida y enviada al correo institucional." }),
 ];

@@ -65,7 +65,7 @@ export function StaffActions({ request, user }: { request: Request; user: User }
                 <div className="space-y-1.5">
                   <Label htmlFor={`note-${to}`}>{to === "Observada" ? "Observación para el estudiante *" : "Nota (opcional)"}</Label>
                   <Textarea id={`note-${to}`} rows={3} value={note} onChange={(e) => setNote(e.target.value)}
-                    placeholder={to === "Observada" ? "Ej. Falta la firma del jefe de servicio en la carta." : "Comentario interno visible en el historial"} />
+                    placeholder={to === "Observada" ? "Ej. Falta la firma del representante de la empresa en la carta." : "Comentario interno visible en el historial"} />
                   <FieldError>{noteError}</FieldError>
                 </div>
               </ConfirmAction>
