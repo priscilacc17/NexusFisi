@@ -75,8 +75,8 @@ export function crearMailer(env: Env, logger: Logger): Mailer {
     };
   }
 
-  if (proveedor === "smtp" && process.env["RENDER"]) {
-    logger.warn("Render gratis bloquea los puertos SMTP (25/465/587): usa MAIL_PROVIDER=brevo o resend");
+  if (proveedor === "smtp" && process.env["RENDER"] && [25, 465, 587].includes(env.SMTP_PORT)) {
+    logger.warn({ puerto: env.SMTP_PORT }, "Render gratis bloquea los puertos SMTP 25/465/587: usa el puerto 2525 (Brevo) o MAIL_PROVIDER=brevo/resend");
   }
 
   if (!env.SMTP_HOST) {
