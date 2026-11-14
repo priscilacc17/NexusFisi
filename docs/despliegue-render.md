@@ -35,15 +35,17 @@ Las tablas las crea la propia API al arrancar (migraciones automáticas): no hay
 
 > Algunas redes corporativas o universitarias bloquean la salida a puertos no estándar (Aiven usa uno alto, p. ej. 16370). Si desde tu equipo no conecta, no afecta a Render: allí la salida no está restringida.
 
-## 2. Contraseña de aplicación de Gmail
+## 2. Correo saliente: Brevo (API HTTPS)
 
-Los correos (recuperación de contraseña y avisos) se envían por SMTP de Gmail. Gmail **no acepta la contraseña normal** de la cuenta:
+**Render gratuito bloquea la salida por los puertos SMTP (25, 465 y 587)**, así que Gmail por SMTP no funciona allí; en una VM sí. En Render, el correo sale por la **API HTTPS de Brevo** (puerto 443): plan gratuito de 300 correos al día y sin necesidad de dominio propio.
 
-1. En la cuenta de Gmail que enviará los correos, activa la verificación en dos pasos.
-2. Ve a <https://myaccount.google.com/apppasswords> y crea una contraseña de aplicación con el nombre «NexusFisi».
-3. Usa esos 16 caracteres en `SMTP_PASS`.
+1. Crea una cuenta en <https://www.brevo.com> con el correo que quieres usar como remitente (por ejemplo, el Gmail del equipo). Ese correo queda verificado como remitente; si usas otro, agrégalo en *Senders & IP → Senders* y confírmalo.
+2. *SMTP & API → API Keys → Generate a new API key* y copia la clave (`xkeysib-…`).
+3. En Render: `MAIL_PROVIDER=brevo`, `MAIL_API_KEY=<la clave>`, `MAIL_FROM=NexusFisi <tu-remitente-verificado>`.
 
-**Nunca escribas esa contraseña en el repositorio**: va solo en las variables de Render. Si alguna vez quedó escrita en otro lugar (un chat, un documento), revócala en la misma página y crea otra.
+También se admite Resend (`MAIL_PROVIDER=resend`). Sin dominio propio, Resend solo envía a la casilla de tu cuenta, lo que basta para una demo con `MAIL_REDIRECT_TO`.
+
+**Nunca escribas claves en el repositorio**: van solo en las variables de Render.
 
 ## 3. Crear el servicio con el Blueprint
 
@@ -56,9 +58,9 @@ Los correos (recuperación de contraseña y avisos) se envían por SMTP de Gmail
 | `DATABASE_URL` | La *Service URI* de Aiven, tal cual. |
 | `DATABASE_SSL_CA` | Contenido del *CA certificate* (PEM completo, `-----BEGIN CERTIFICATE-----…`). |
 | `PUBLIC_URL` y `CORS_ORIGINS` | Pueden quedar **vacías**: la API usa la URL pública que Render inyecta (`RENDER_EXTERNAL_URL`). Defínelas solo si usas un dominio propio. |
-| `SMTP_USER` | La cuenta de Gmail que envía. |
-| `SMTP_PASS` | La contraseña de aplicación. |
-| `MAIL_FROM` | `NexusFisi <cuenta@gmail.com>` |
+| `MAIL_PROVIDER` | `brevo` (ya viene en el blueprint). |
+| `MAIL_API_KEY` | La API key de Brevo. |
+| `MAIL_FROM` | `NexusFisi <remitente-verificado@gmail.com>` |
 | `MAIL_REDIRECT_TO` | **En una demo:** tu casilla, para que los correos de las cuentas ficticias te lleguen a ti. **En producción real:** déjalo vacío. |
 
 `JWT_SECRET` lo genera Render automáticamente. `SEED_DEMO_ON_START=true` carga los datos de demostración la primera vez (con la base vacía); en una instalación real ponlo en `false`.
