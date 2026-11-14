@@ -11,13 +11,17 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/app'
+import { Route as RecuperarRouteImport } from './routes/recuperar'
+import { Route as RegistroRouteImport } from './routes/registro'
+import { Route as RestablecerRouteImport } from './routes/restablecer'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppAdminRouteImport } from './routes/app.admin'
 import { Route as AppBandejaRouteImport } from './routes/app.bandeja'
 import { Route as AppNuevaRouteImport } from './routes/app.nueva'
+import { Route as AppPerfilRouteImport } from './routes/app.perfil'
 import { Route as AppTramitesRouteImport } from './routes/app.tramites'
 import { Route as AppSolicitudesIndexRouteImport } from './routes/app.solicitudes.index'
-import { Route as AppSolicitudesIdRouteImport } from './routes/app.solicitudes.$id'
+import { Route as AppSolicitudesCodigoRouteImport } from './routes/app.solicitudes.$codigo'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -27,6 +31,21 @@ const IndexRoute = IndexRouteImport.update({
 const AppRoute = AppRouteImport.update({
   id: '/app',
   path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecuperarRoute = RecuperarRouteImport.update({
+  id: '/recuperar',
+  path: '/recuperar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegistroRoute = RegistroRouteImport.update({
+  id: '/registro',
+  path: '/registro',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RestablecerRoute = RestablecerRouteImport.update({
+  id: '/restablecer',
+  path: '/restablecer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -49,6 +68,11 @@ const AppNuevaRoute = AppNuevaRouteImport.update({
   path: '/nueva',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPerfilRoute = AppPerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppTramitesRoute = AppTramitesRouteImport.update({
   id: '/tramites',
   path: '/tramites',
@@ -59,43 +83,55 @@ const AppSolicitudesIndexRoute = AppSolicitudesIndexRouteImport.update({
   path: '/solicitudes/',
   getParentRoute: () => AppRoute,
 } as any)
-const AppSolicitudesIdRoute = AppSolicitudesIdRouteImport.update({
-  id: '/solicitudes/$id',
-  path: '/solicitudes/$id',
+const AppSolicitudesCodigoRoute = AppSolicitudesCodigoRouteImport.update({
+  id: '/solicitudes/$codigo',
+  path: '/solicitudes/$codigo',
   getParentRoute: () => AppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
+  '/recuperar': typeof RecuperarRoute
+  '/registro': typeof RegistroRoute
+  '/restablecer': typeof RestablecerRoute
   '/app/admin': typeof AppAdminRoute
   '/app/bandeja': typeof AppBandejaRoute
   '/app/nueva': typeof AppNuevaRoute
+  '/app/perfil': typeof AppPerfilRoute
   '/app/tramites': typeof AppTramitesRoute
   '/app/': typeof AppIndexRoute
-  '/app/solicitudes/$id': typeof AppSolicitudesIdRoute
+  '/app/solicitudes/$codigo': typeof AppSolicitudesCodigoRoute
   '/app/solicitudes/': typeof AppSolicitudesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/recuperar': typeof RecuperarRoute
+  '/registro': typeof RegistroRoute
+  '/restablecer': typeof RestablecerRoute
   '/app/admin': typeof AppAdminRoute
   '/app/bandeja': typeof AppBandejaRoute
   '/app/nueva': typeof AppNuevaRoute
+  '/app/perfil': typeof AppPerfilRoute
   '/app/tramites': typeof AppTramitesRoute
   '/app': typeof AppIndexRoute
-  '/app/solicitudes/$id': typeof AppSolicitudesIdRoute
+  '/app/solicitudes/$codigo': typeof AppSolicitudesCodigoRoute
   '/app/solicitudes': typeof AppSolicitudesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
+  '/recuperar': typeof RecuperarRoute
+  '/registro': typeof RegistroRoute
+  '/restablecer': typeof RestablecerRoute
   '/app/admin': typeof AppAdminRoute
   '/app/bandeja': typeof AppBandejaRoute
   '/app/nueva': typeof AppNuevaRoute
+  '/app/perfil': typeof AppPerfilRoute
   '/app/tramites': typeof AppTramitesRoute
   '/app/': typeof AppIndexRoute
-  '/app/solicitudes/$id': typeof AppSolicitudesIdRoute
+  '/app/solicitudes/$codigo': typeof AppSolicitudesCodigoRoute
   '/app/solicitudes/': typeof AppSolicitudesIndexRoute
 }
 export interface FileRouteTypes {
@@ -103,39 +139,54 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/app'
+    | '/recuperar'
+    | '/registro'
+    | '/restablecer'
     | '/app/admin'
     | '/app/bandeja'
     | '/app/nueva'
+    | '/app/perfil'
     | '/app/tramites'
     | '/app/'
-    | '/app/solicitudes/$id'
+    | '/app/solicitudes/$codigo'
     | '/app/solicitudes/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/recuperar'
+    | '/registro'
+    | '/restablecer'
     | '/app/admin'
     | '/app/bandeja'
     | '/app/nueva'
+    | '/app/perfil'
     | '/app/tramites'
     | '/app'
-    | '/app/solicitudes/$id'
+    | '/app/solicitudes/$codigo'
     | '/app/solicitudes'
   id:
     | '__root__'
     | '/'
     | '/app'
+    | '/recuperar'
+    | '/registro'
+    | '/restablecer'
     | '/app/admin'
     | '/app/bandeja'
     | '/app/nueva'
+    | '/app/perfil'
     | '/app/tramites'
     | '/app/'
-    | '/app/solicitudes/$id'
+    | '/app/solicitudes/$codigo'
     | '/app/solicitudes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
+  RecuperarRoute: typeof RecuperarRoute
+  RegistroRoute: typeof RegistroRoute
+  RestablecerRoute: typeof RestablecerRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -152,6 +203,27 @@ declare module '@tanstack/react-router' {
       path: '/app'
       fullPath: '/app'
       preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recuperar': {
+      id: '/recuperar'
+      path: '/recuperar'
+      fullPath: '/recuperar'
+      preLoaderRoute: typeof RecuperarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/registro': {
+      id: '/registro'
+      path: '/registro'
+      fullPath: '/registro'
+      preLoaderRoute: typeof RegistroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/restablecer': {
+      id: '/restablecer'
+      path: '/restablecer'
+      fullPath: '/restablecer'
+      preLoaderRoute: typeof RestablecerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/': {
@@ -182,6 +254,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppNuevaRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/perfil': {
+      id: '/app/perfil'
+      path: '/perfil'
+      fullPath: '/app/perfil'
+      preLoaderRoute: typeof AppPerfilRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/tramites': {
       id: '/app/tramites'
       path: '/tramites'
@@ -196,11 +275,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSolicitudesIndexRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/solicitudes/$id': {
-      id: '/app/solicitudes/$id'
-      path: '/solicitudes/$id'
-      fullPath: '/app/solicitudes/$id'
-      preLoaderRoute: typeof AppSolicitudesIdRouteImport
+    '/app/solicitudes/$codigo': {
+      id: '/app/solicitudes/$codigo'
+      path: '/solicitudes/$codigo'
+      fullPath: '/app/solicitudes/$codigo'
+      preLoaderRoute: typeof AppSolicitudesCodigoRouteImport
       parentRoute: typeof AppRoute
     }
   }
@@ -210,9 +289,10 @@ interface AppRouteChildren {
   AppAdminRoute: typeof AppAdminRoute
   AppBandejaRoute: typeof AppBandejaRoute
   AppNuevaRoute: typeof AppNuevaRoute
+  AppPerfilRoute: typeof AppPerfilRoute
   AppTramitesRoute: typeof AppTramitesRoute
   AppIndexRoute: typeof AppIndexRoute
-  AppSolicitudesIdRoute: typeof AppSolicitudesIdRoute
+  AppSolicitudesCodigoRoute: typeof AppSolicitudesCodigoRoute
   AppSolicitudesIndexRoute: typeof AppSolicitudesIndexRoute
 }
 
@@ -220,9 +300,10 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminRoute: AppAdminRoute,
   AppBandejaRoute: AppBandejaRoute,
   AppNuevaRoute: AppNuevaRoute,
+  AppPerfilRoute: AppPerfilRoute,
   AppTramitesRoute: AppTramitesRoute,
   AppIndexRoute: AppIndexRoute,
-  AppSolicitudesIdRoute: AppSolicitudesIdRoute,
+  AppSolicitudesCodigoRoute: AppSolicitudesCodigoRoute,
   AppSolicitudesIndexRoute: AppSolicitudesIndexRoute,
 }
 
@@ -231,6 +312,9 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
+  RecuperarRoute: RecuperarRoute,
+  RegistroRoute: RegistroRoute,
+  RestablecerRoute: RestablecerRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
