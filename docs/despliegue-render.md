@@ -43,6 +43,8 @@ Las tablas las crea la propia API al arrancar (migraciones automáticas): no hay
 2. *SMTP & API → API Keys → Generate a new API key* y copia la clave (`xkeysib-…`).
 3. En Render: `MAIL_PROVIDER=brevo`, `MAIL_API_KEY=<la clave>`, `MAIL_FROM=NexusFisi <tu-remitente-verificado>`.
 
+Alternativa con SMTP: Brevo acepta SMTP por el puerto **2525**, que Render no bloquea (`SMTP_HOST=smtp-relay.brevo.com`, `SMTP_PORT=2525`, el usuario `…@smtp-brevo.com` y la *SMTP key* `xsmtpsib-…` como `SMTP_PASS`, sin `MAIL_PROVIDER`).
+
 También se admite Resend (`MAIL_PROVIDER=resend`). Sin dominio propio, Resend solo envía a la casilla de tu cuenta, lo que basta para una demo con `MAIL_REDIRECT_TO`.
 
 **Nunca escribas claves en el repositorio**: van solo en las variables de Render.
