@@ -14,4 +14,15 @@ describe("App routing", () => {
 
     expect(matches.at(-1)?.routeId).not.toBe(rootRouteId);
   });
+
+  it.each([
+    ["/registro", "/registro"],
+    ["/app/solicitudes/FISI-2026-00001", "/app/solicitudes/$codigo"],
+    ["/app/bandeja", "/app/bandeja"],
+    ["/app/admin", "/app/admin"],
+    ["/app/perfil", "/app/perfil"],
+  ])("%s resuelve a la ruta %s", (url, id) => {
+    const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
+    expect(router.matchRoutes(url).at(-1)?.routeId).toBe(id);
+  });
 });
