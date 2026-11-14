@@ -1,0 +1,15 @@
+# Solo para desarrollo local: MySQL en 127.0.0.1:3317 (la API y Vite corren con npm run dev).
+#   docker compose -f deploy/docker-compose.dev.yml up -d
+name: nexusfisi-dev
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: nexusfisi
+      MYSQL_USER: nexusfisi
+      MYSQL_PASSWORD: nexusfisi_dev
+      MYSQL_ROOT_PASSWORD: root_dev
+    ports:
+      - "127.0.0.1:3317:3306"
+    volumes:
+      - ./mysql-init:/docker-entrypoint-initdb.d:ro
