@@ -64,7 +64,16 @@ export type Env = z.infer<typeof schema>;
 export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
   // Una variable definida pero vacía (habitual en docker compose y en los paneles
   // de Render) cuenta como no definida: toma su valor por defecto.
-  const limpio = Object.fromEntries(Object.entries(source).filter(([, v]) => v !== undefined && v.trim() !== ""));
+  const limpio: Record<string, string> = Object.fromEntries(
+    Object.entries(source).filter((e): e is [string, string] => e[1] !== undefined && e[1].trim() !== ""),
+  );
+  // En Render, si no se definió PUBLIC_URL, se usa la URL pública que Render
+  // inyecta sola (RENDER_EXTERNAL_URL). Lo mismo para el origen permitido por CORS.
+  const render = limpio["RENDER_EXTERNAL_URL"];
+  if (render) {
+    limpio["PUBLIC_URL"] ??= render;
+    limpio["CORS_ORIGINS"] ??= render;
+  }
   const parsed = schema.safeParse(limpio);
   if (!parsed.success) {
     const detalle = parsed.error.issues.map((i) => `  - ${i.path.join(".")}: ${i.message}`).join("\n");

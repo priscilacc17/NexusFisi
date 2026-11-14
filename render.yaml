@@ -30,10 +30,6 @@ services:
         generateValue: true
       - key: JWT_EXPIRES_IN
         value: 8h
-      - key: PUBLIC_URL            # https://nexusfisi.onrender.com (la URL que te asigne Render)
-        sync: false
-      - key: CORS_ORIGINS          # la misma URL pública
-        sync: false
       - key: COOKIE_SECURE
         value: "true"
       - key: SMTP_HOST

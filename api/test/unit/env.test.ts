@@ -30,3 +30,15 @@ describe("URI de la base de datos", () => {
     expect(normalizarUrl("mysql://u:p@127.0.0.1:3317/nexusfisi")).toEqual({ uri: "mysql://u:p@127.0.0.1:3317/nexusfisi", pideTls: false });
   });
 });
+
+describe("Render", () => {
+  it("sin PUBLIC_URL ni CORS_ORIGINS usa la URL que inyecta Render", () => {
+    const env = loadEnv({ ...base, RENDER_EXTERNAL_URL: "https://nexusfisi.onrender.com", PUBLIC_URL: "", CORS_ORIGINS: "" });
+    expect(env.PUBLIC_URL).toBe("https://nexusfisi.onrender.com");
+    expect(env.CORS_ORIGINS).toEqual(["https://nexusfisi.onrender.com"]);
+  });
+  it("si se definen, mandan los valores propios", () => {
+    const env = loadEnv({ ...base, RENDER_EXTERNAL_URL: "https://nexusfisi.onrender.com", PUBLIC_URL: "https://tramites.unmsm.edu.pe" });
+    expect(env.PUBLIC_URL).toBe("https://tramites.unmsm.edu.pe");
+  });
+});
