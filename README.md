@@ -1,96 +1,106 @@
-# NexusFisi Hub
+# NexusFisi
 
-Desarrolla una aplicación web responsive llamada **NexusFisi**, una plataforma para gestionar y dar seguimiento a solicitudes y trámites académicos de la Facultad de Ingeniería de Sistemas e Informática (FISI) de la Universidad Nacional Mayor de San Marcos (UNMSM).
+Plataforma web para **registrar, gestionar, priorizar, atender y monitorear los trámites académicos de las facultades de la Universidad Nacional Mayor de San Marcos (UNMSM)**.
 
-### 1. Objetivo
-Crear un MVP funcional, moderno y fácil de usar para estudiantes y personal administrativo. Prioriza las funciones esenciales y evita implementar características innecesarias que aumenten la complejidad.
+Cada facultad tiene su propio catálogo de trámites, sus áreas responsables, su personal y su numeración de expedientes (`FISI-2026-00001`, `FM-2026-00001`…). El personal de una facultad nunca ve ni modifica las solicitudes de otra. Un administrador central gestiona las facultades y ve los indicadores de toda la universidad.
 
-### 2. Diseño visual
-- Interfaz universitaria profesional, limpia y moderna.
-- Diseño responsive para computadoras, tablets y celulares.
-- Barra lateral de navegación en escritorio y menú adaptable en móvil.
-- Tarjetas informativas, tablas claras, formularios accesibles y estados visuales.
-- Utiliza una paleta coherente de azul oscuro, turquesa, blanco y grises suaves.
-- Toda la interfaz debe estar en español.
-- Usa componentes reutilizables y mantén una apariencia consistente.
+> Proyecto del curso *Taller de Construcción de Software Web* — propuesta «TrámiteUni» adaptada a la UNMSM. El enunciado está en [`docs/presentacion/`](docs/presentacion/).
+>
+> La interfaz se generó inicialmente con Lovable y el repositorio sigue conectado a su editor, pero **la aplicación no depende de Lovable para funcionar ni para desplegarse**: se construye como imágenes Docker y corre en Render o en cualquier servidor con Docker.
 
-### 3. Roles de usuario
-Implementa interfaces diferenciadas para:
+## Arquitectura
 
-**Estudiante**
-- Ver su panel principal.
-- Consultar los trámites disponibles y sus requisitos.
-- Registrar una solicitud mediante un formulario.
-- Adjuntar documentos de prueba.
-- Consultar sus solicitudes, estados, fechas y observaciones.
-- Ver el historial de movimientos de cada solicitud.
-- Consultar mensajes relacionados con su solicitud.
-
-**Personal administrativo**
-- Ver una bandeja de solicitudes.
-- Buscar y filtrar por código, tipo, estado y fecha.
-- Abrir una solicitud y revisar sus datos y documentos.
-- Cambiar el estado según las acciones permitidas.
-- Registrar observaciones y solicitar correcciones.
-- Asignar un responsable y registrar una respuesta.
-- Comunicarse con el estudiante mediante mensajes asociados al expediente.
-
-**Administrador**
-- Consultar una pantalla básica de administración.
-- Gestionar los tipos de trámite y visualizar usuarios de demostración.
-
-### 4. Funcionalidades principales
-1. Inicio de sesión y navegación según rol.
-2. Dashboard con tarjetas de resumen.
-3. Catálogo de trámites con descripción y requisitos.
-4. Formulario para registrar solicitudes y validar campos obligatorios.
-5. Listado de solicitudes con código único, fecha y estado.
-6. Vista detallada con información, documentos, observaciones e historial.
-7. Bandeja administrativa con filtros y acciones.
-8. Mensajes asociados a cada solicitud.
-9. Notificaciones visuales dentro de la aplicación.
-10. Diseño preparado para incorporar posteriormente un asistente inteligente que oriente al estudiante sobre qué trámite elegir.
-
-Estados iniciales: **Registrada, En evaluación, Observada, Asignada, En atención, Resuelta y Cerrada**. Permite cambios de estado coherentes y muestra el historial de cada cambio.
-
-### 5. Datos y funcionamiento
-Primero construye el frontend funcional con datos de demostración realistas. Si no hay backend conectado, usa un servicio de datos local claramente separado de los componentes visuales, con persistencia local cuando sea viable.
-
-No simules que existe una API o una base de datos real. Organiza el código para permitir una integración posterior con React, Java Spring Boot, MySQL y una API REST.
-
-Incluye datos de prueba para estudiantes, personal administrativo y varias solicitudes en diferentes estados. Si implementas acceso de demostración, indica claramente las credenciales de prueba y no lo presentes como autenticación segura de producción.
-
-### 6. Reglas de calidad
-- Los botones principales deben funcionar; no dejes controles decorativos que aparenten funcionar.
-- Valida los formularios y muestra mensajes de error comprensibles.
-- Incluye estados de carga, listas vacías y confirmaciones para acciones importantes.
-- Usa componentes reutilizables y nombres claros.
-- No inventes integraciones externas ni funciones de inteligencia artificial ya conectadas.
-- No implementes pagos, firma digital ni integraciones con sistemas universitarios externos.
-- Prioriza el flujo completo: registrar solicitud → revisarla → observarla si corresponde → corregirla → resolverla → consultar el resultado.
-
-### 7. Forma de trabajo
-Trabaja en etapas para reducir errores y consumo de créditos. Empieza por la estructura general, navegación, diseño visual, dashboards y datos de demostración. Después implementa el registro y seguimiento de solicitudes y, finalmente, la bandeja administrativa y los mensajes.
-
-**En esta primera generación, céntrate en entregar una base visual navegable y funcional.** No intentes construir todo el backend en esta etapa. Conserva una estructura de proyecto ordenada y no reemplaces funcionalidades existentes sin necesidad.
-
-This project was built with [Lovable](https://lovable.dev).
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/8c0984ab-69f4-56e0-b43f-aa32efa91847).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
 ```
+Navegador ──HTTPS──▶ Gateway nginx ──/api/*──▶ API REST (Node + Hono + TypeScript) ──▶ MySQL 8.4
+                         │                          │
+                         └──── / ────▶ Frontend      └─ adjuntos en volumen privado
+                                     (React + TanStack Start)
+```
+
+| Capa | Tecnología | Carpeta |
+|---|---|---|
+| Frontend | React 19, TypeScript, TanStack Router/Start, TanStack Query, Tailwind CSS, Radix/shadcn | [`src/`](src/) |
+| API REST | Node 22, Hono, Zod + OpenAPI 3.1, JWT (jose), bcrypt, Drizzle ORM | [`api/`](api/) |
+| Base de datos | MySQL 8.4, migraciones versionadas | [`api/drizzle/`](api/drizzle/) |
+| Despliegue | Docker, docker compose, nginx como API gateway | [`deploy/`](deploy/) |
+| CI/CD | GitHub Actions → GitHub Container Registry → VM | [`.github/workflows/`](.github/workflows/) |
+
+El stack del enunciado (Spring Boot) era referencial: se eligió **TypeScript de punta a punta** para compartir lenguaje, tipos y validaciones entre frontend y API. La justificación está en [docs/arquitectura.md](docs/arquitectura.md).
+
+## Funcionalidades
+
+- **Autenticación:** registro de estudiantes con correo `@unmsm.edu.pe`, sesión con JWT en cookie `HttpOnly` y protección CSRF, cambio y **recuperación de contraseña por correo**, bloqueo tras 5 intentos fallidos y cierre inmediato de sesión al desactivar una cuenta.
+- **Avisos por correo** cuando una solicitud se observa, se resuelve o se asigna.
+- **Roles:** Estudiante, Técnico, Supervisor y Administrador (de facultad o central).
+- **Registro de solicitudes:** código único por facultad, tipo, descripción, ubicación del área que atiende, prioridad, plazo en días hábiles, responsable, evidencias (PDF, JPG, PNG validados por contenido) y comentarios.
+- **Gestión:** flujo `Registrada → En evaluación → Asignada → En atención → Resuelta → Cerrada`, con observación y corrección, reasignación, desistimiento y reapertura (una vez). Historial completo y notificaciones.
+- **Dashboard:** registradas, pendientes, atendidas, vencidas, % resueltas, tiempo promedio de atención, y conteos por estado, categoría, prioridad, responsable y facultad.
+- **Administración:** usuarios y roles, tipos de trámite, áreas responsables, facultades y escuelas, y referencia de estados y prioridades.
+
+## Puesta en marcha (desarrollo)
+
+Requisitos: Node 22, Docker y [Bun](https://bun.sh) (o `npx bun`).
+
+```bash
+# 1. Base de datos local (MySQL en 127.0.0.1:3317, incluye la base de pruebas)
+docker compose -f deploy/docker-compose.dev.yml up -d
+
+# 2. API (http://localhost:4000, documentación en http://localhost:4000/api/docs)
+cd api
+cp .env.example .env            # genera un JWT_SECRET propio
+npm install
+npm run db:seed                 # migra y carga datos de demostración
+npm run dev
+
+# 3. Frontend (en otra terminal, desde la raíz)
+bun install
+bun run dev                     # /api se redirige a la API local
+```
+
+### Cuentas de demostración
+
+Contraseña de todas: `Demo1234`. Son datos ficticios, no personas reales.
+
+| Rol | Correo |
+|---|---|
+| Estudiante (FISI) | `estudiante.fisi@unmsm.edu.pe`, `estudiante2.fisi@unmsm.edu.pe` |
+| Técnico (FISI) | `tecnico.fisi@unmsm.edu.pe`, `tecnico2.fisi@unmsm.edu.pe` |
+| Supervisor (FISI) | `supervisor.fisi@unmsm.edu.pe` |
+| Administrador de facultad (FISI) | `admin.fisi@unmsm.edu.pe` |
+| Administrador central | `admin.central@unmsm.edu.pe` |
+| Medicina / Derecho | `estudiante.fm@…`, `supervisor.fm@…`, `tecnico.fm@…`, `estudiante.fdcp@…`, `supervisor.fdcp@…`, `tecnico.fdcp@…` |
+
+## Pruebas
+
+```bash
+cd api && npm test     # 78 pruebas: unitarias + integración contra MySQL real
+npx vitest run         # frontend: cliente HTTP, rutas, panel de acciones
+```
+
+Detalle de la estrategia y de los escenarios BDD cubiertos en [docs/pruebas.md](docs/pruebas.md).
+
+## Despliegue
+
+**Render (Docker):** el repositorio incluye [`render.yaml`](render.yaml) y la imagen [`Dockerfile.render`](Dockerfile.render). Paso a paso en [docs/despliegue-render.md](docs/despliegue-render.md).
+
+**VM propia con docker compose:**
+
+```bash
+cd deploy
+cp .env.example .env    # completa contraseñas y JWT_SECRET
+docker compose up -d --build
+docker compose exec api node dist/db/seed.js   # solo en entornos de demostración
+```
+
+Guía completa (VM, TLS, CI/CD, respaldos) en [docs/despliegue.md](docs/despliegue.md).
+
+## Documentación
+
+- [Arquitectura y modelo de datos](docs/arquitectura.md)
+- [API REST](docs/api.md) — referencia interactiva en `/api/docs`
+- [Seguridad (OWASP)](docs/seguridad.md)
+- [Pruebas](docs/pruebas.md)
+- [Despliegue en Render](docs/despliegue-render.md)
+- [Despliegue en VM y ambientes](docs/despliegue.md)
+- [Flujo de ramas](docs/git-ramas.md)
+- [Registro de uso de IA](docs/registro-ia.md)
