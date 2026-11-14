@@ -1,91 +1,79 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, Navigate, useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
-import { BellRing, FileCheck2, Loader2, Route as RouteIcon, ShieldAlert } from "lucide-react";
+import { Loader2, ShieldAlert } from "lucide-react";
+import { AuthLayout } from "@/components/auth/AuthLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { login } from "@/lib/session";
+import { mensajeDeError } from "@/lib/api/client";
+import { useLogin } from "@/lib/api/queries";
+import { useSesion } from "@/lib/session";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "NexusFisi · Trámites académicos de la FISI · UNMSM" },
-      { name: "description", content: "Registra y da seguimiento a tus solicitudes y trámites académicos de la Facultad de Ingeniería de Sistemas e Informática de la UNMSM." },
+      { title: "NexusFisi · Trámites académicos UNMSM" },
+      { name: "description", content: "Registra y da seguimiento a tus solicitudes y trámites académicos en las facultades de la Universidad Nacional Mayor de San Marcos." },
       { property: "og:title", content: "NexusFisi · Trámites académicos" },
-      { property: "og:description", content: "Plataforma de solicitudes y trámites de la FISI · UNMSM." },
+      { property: "og:description", content: "Plataforma de solicitudes y trámites académicos de la UNMSM." },
     ],
   }),
   component: LoginPage,
 });
 
+// Cuentas de los datos de demostración (api/src/db/seed.ts). Se ocultan con VITE_MOSTRAR_DEMO=false.
 const DEMO = [
-  { role: "Estudiante", email: "estudiante@nexusfisi.edu" },
-  { role: "Personal administrativo", email: "personal@nexusfisi.edu" },
-  { role: "Administrador", email: "admin@nexusfisi.edu" },
+  { rol: "Estudiante (FISI)", email: "estudiante.fisi@unmsm.edu.pe" },
+  { rol: "Técnico (FISI)", email: "tecnico.fisi@unmsm.edu.pe" },
+  { rol: "Supervisor (FISI)", email: "supervisor.fisi@unmsm.edu.pe" },
+  { rol: "Administrador (FISI)", email: "admin.fisi@unmsm.edu.pe" },
+  { rol: "Administrador central", email: "admin.central@unmsm.edu.pe" },
 ];
+const MOSTRAR_DEMO = import.meta.env["VITE_MOSTRAR_DEMO"] !== "false";
 
 function LoginPage() {
+  const sesion = useSesion();
   const navigate = useNavigate();
+  const login = useLogin();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+
+  if (sesion) return <Navigate to="/app" replace />;
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
     if (!email.trim() || !password) return setError("Ingresa tu correo y contraseña.");
-    setLoading(true);
-    setTimeout(() => {
-      const u = login(email, password);
-      setLoading(false);
-      if (!u) return setError("Correo o contraseña incorrectos.");
-      navigate({ to: "/app" });
-    }, 400);
+    setError("");
+    login.mutate({ email: email.trim(), password }, {
+      onSuccess: () => void navigate({ to: "/app" }),
+      onError: (err) => setError(mensajeDeError(err)),
+    });
   };
 
   return (
-    <div className="grid min-h-screen lg:grid-cols-2">
-      <div className="relative hidden overflow-hidden bg-brand lg:block">
-        <div className="relative flex h-full flex-col justify-end p-12 text-primary-foreground">
-          <p className="mb-6 text-sm font-semibold uppercase tracking-widest opacity-80">FISI · UNMSM</p>
-          <h2 className="text-4xl font-bold leading-tight">Tus trámites académicos,<br />claros y a tiempo.</h2>
-          <p className="mt-4 max-w-md opacity-85">Registra solicitudes, adjunta documentos y sigue cada paso de tu expediente en la Facultad de Ingeniería de Sistemas e Informática.</p>
-          <ul className="mt-8 space-y-3 text-sm">
-            {[
-              { icon: FileCheck2, text: "Consulta los requisitos y registra tu solicitud en línea" },
-              { icon: RouteIcon, text: "Sigue el estado y el historial de tu expediente" },
-              { icon: BellRing, text: "Recibe avisos y mensajes del personal administrativo" },
-            ].map((f) => (
-              <li key={f.text} className="flex items-center gap-3"><span className="grid h-8 w-8 place-items-center rounded-lg bg-white/15"><f.icon className="h-4 w-4" /></span>{f.text}</li>
+    <AuthLayout>
+      <form onSubmit={submit} className="space-y-4" noValidate>
+        <div className="space-y-1.5"><Label htmlFor="email">Correo institucional</Label><Input id="email" type="email" autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="nombre.apellido@unmsm.edu.pe" /></div>
+        <div className="space-y-1.5"><Label htmlFor="pw">Contraseña</Label><Input id="pw" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} /></div>
+        {error && <p role="alert" className="text-sm font-medium text-destructive">{error}</p>}
+        <Button type="submit" className="w-full" disabled={login.isPending}>{login.isPending && <Loader2 className="h-4 w-4 animate-spin" />}Ingresar</Button>
+      </form>
+      <p className="mt-3 text-center text-sm"><Link to="/recuperar" className="text-muted-foreground hover:text-primary hover:underline">¿Olvidaste tu contraseña?</Link></p>
+      <p className="mt-4 text-center text-sm text-muted-foreground">¿Eres estudiante y no tienes cuenta? <Link to="/registro" className="font-semibold text-primary hover:underline">Regístrate</Link></p>
+      {MOSTRAR_DEMO && (
+        <div className="mt-8 rounded-xl border bg-card p-4">
+          <p className="flex items-center gap-2 text-sm font-semibold"><ShieldAlert className="h-4 w-4 text-warning" />Cuentas de demostración</p>
+          <p className="mt-1 text-xs text-muted-foreground">Datos de prueba, no reales. Contraseña para todas: <span className="font-mono font-semibold text-foreground">Demo1234</span></p>
+          <div className="mt-3 space-y-1.5">
+            {DEMO.map((d) => (
+              <button key={d.email} type="button" onClick={() => { setEmail(d.email); setPassword("Demo1234"); setError(""); }} className="flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left text-xs hover:border-accent hover:bg-accent/10">
+                <span className="font-semibold">{d.rol}</span><span className="truncate font-mono text-muted-foreground">{d.email.split("@")[0]}</span>
+              </button>
             ))}
-          </ul>
-        </div>
-      </div>
-      <div className="flex items-center justify-center p-6">
-        <div className="w-full max-w-sm">
-          <div className="mb-8 flex items-center gap-3">
-            <div className="grid h-11 w-11 place-items-center rounded-xl bg-brand font-bold text-primary-foreground">NF</div>
-            <div><h1 className="text-2xl font-bold">NexusFisi</h1><p className="text-sm text-muted-foreground">FISI · UNMSM</p></div>
-          </div>
-          <form onSubmit={submit} className="space-y-4" noValidate>
-            <div className="space-y-1.5"><Label htmlFor="email">Correo institucional</Label><Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="nombre@nexusfisi.edu" /></div>
-            <div className="space-y-1.5"><Label htmlFor="pw">Contraseña</Label><Input id="pw" type="password" value={password} onChange={(e) => setPassword(e.target.value)} /></div>
-            {error && <p role="alert" className="text-sm font-medium text-destructive">{error}</p>}
-            <Button type="submit" className="w-full" disabled={loading}>{loading && <Loader2 className="h-4 w-4 animate-spin" />}Ingresar</Button>
-          </form>
-          <div className="mt-8 rounded-xl border bg-card p-4">
-            <p className="flex items-center gap-2 text-sm font-semibold"><ShieldAlert className="h-4 w-4 text-warning" />Acceso de demostración</p>
-            <p className="mt-1 text-xs text-muted-foreground">No es autenticación segura. Contraseña para todos: <span className="font-mono font-semibold text-foreground">demo123</span></p>
-            <div className="mt-3 space-y-1.5">
-              {DEMO.map((d) => (
-                <button key={d.email} type="button" onClick={() => { setEmail(d.email); setPassword("demo123"); setError(""); }} className="flex w-full items-center justify-between rounded-lg border px-3 py-2 text-left text-xs hover:border-accent hover:bg-accent/10">
-                  <span className="font-semibold">{d.role}</span><span className="font-mono text-muted-foreground">{d.email}</span>
-                </button>
-              ))}
-            </div>
           </div>
         </div>
-      </div>
-    </div>
+      )}
+    </AuthLayout>
   );
 }

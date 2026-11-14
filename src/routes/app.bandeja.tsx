@@ -1,102 +1,130 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { FilterX, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { EmptyState, PageHeader, Panel, selectClass } from "@/components/app/common";
+import { EmptyState, ErrorState, LoadingState, PageHeader, Panel, selectClass } from "@/components/app/common";
+import { EstadoChips } from "@/components/app/EstadoChips";
+import { Pagination } from "@/components/app/Pagination";
 import { RequestTable } from "@/components/app/RequestTable";
-import { useData } from "@/lib/data/store";
-import { STATUSES } from "@/lib/data/types";
-import { useCurrentUser } from "@/lib/session";
-import { cn } from "@/lib/utils";
+import { useDebounced } from "@/hooks/use-debounced";
+import { useFacultadesAdmin, useSolicitudes, useTipos } from "@/lib/api/queries";
+import type { FiltrosSolicitudes } from "@/lib/api/types";
+import { prioridadLabel, PRIORIDADES } from "@/lib/labels";
+import { useUsuario } from "@/lib/session";
 
 export const Route = createFileRoute("/app/bandeja")({
-  head: () => ({ meta: [{ title: "Bandeja de solicitudes · NexusFisi" }, { name: "description", content: "Bandeja administrativa de solicitudes." }] }),
-  component: Inbox,
+  head: () => ({ meta: [{ title: "Bandeja de solicitudes · NexusFisi" }, { name: "description", content: "Bandeja de trabajo del personal." }] }),
+  component: Bandeja,
 });
 
-const EMPTY = { q: "", typeId: "", status: "", from: "", to: "", mine: false };
+const SIZE = 15;
+const VACIO: FiltrosSolicitudes = { orden: "prioridad" };
 
-function Inbox() {
-  const user = useCurrentUser()!;
-  const { requests, users, types } = useData((s) => s);
-  const [f, setF] = useState(EMPTY);
-  const set = (k: keyof typeof EMPTY) => (e: { target: { value: string } }) => setF({ ...f, [k]: e.target.value });
+function Bandeja() {
+  const user = useUsuario();
+  const central = user.rol === "ADMIN" && !user.facultad;
+  const [f, setF] = useState<FiltrosSolicitudes>(VACIO);
+  const [q, setQ] = useState("");
+  const [page, setPage] = useState(1);
+  const busqueda = useDebounced(q.trim(), 300);
+  const lista = useSolicitudes({ ...f, q: busqueda || undefined, page, size: SIZE });
+  const tipos = useTipos({ facultadId: f.facultadId, incluirInactivos: true, enabled: !central || !!f.facultadId });
+  const facultades = useFacultadesAdmin(central);
 
-  const filtered = useMemo(() => {
-    const q = f.q.trim().toLowerCase();
-    return requests.filter((r) => {
-      const student = users.find((u) => u.id === r.studentId);
-      const day = r.createdAt.slice(0, 10);
-      if (q && ![r.code, r.subject, student?.name, student?.code].some((v) => v?.toLowerCase().includes(q))) return false;
-      if (f.typeId && r.typeId !== f.typeId) return false;
-      if (f.status && r.status !== f.status) return false;
-      if (f.from && day < f.from) return false;
-      if (f.to && day > f.to) return false;
-      if (f.mine && r.assigneeId !== user.id) return false;
-      return true;
-    });
-  }, [requests, users, f, user.id]);
+  if (user.rol === "ESTUDIANTE") return <EmptyState title="Sección para el personal administrativo" action={<Button asChild size="sm"><Link to="/app">Ir al panel</Link></Button>} />;
 
-  if (user.role === "estudiante") {
-    return <EmptyState title="Sección para personal administrativo" action={<Button asChild size="sm"><Link to="/app">Ir al panel</Link></Button>} />;
-  }
-
-  const active = JSON.stringify(f) !== JSON.stringify(EMPTY);
-  const counts = (s: string) => requests.filter((r) => r.status === s).length;
+  const cambiar = (p: Partial<FiltrosSolicitudes>) => {
+    setF((prev) => ({ ...prev, ...p }));
+    setPage(1);
+  };
+  const activos = JSON.stringify(f) !== JSON.stringify(VACIO) || q !== "";
+  const limpiar = () => { setF(VACIO); setQ(""); setPage(1); };
+  const titulo = user.rol === "TECNICO" ? "Mis asignaciones" : user.rol === "ADMIN" ? "Solicitudes" : "Bandeja de solicitudes";
 
   return (
     <>
-      <PageHeader title="Bandeja de solicitudes" subtitle={`${filtered.length} de ${requests.length} solicitudes`} />
-
-      <div className="mb-4 flex gap-2 overflow-x-auto pb-1">
-        {["", ...STATUSES].map((s) => (
-          <button key={s || "todas"} type="button" onClick={() => setF({ ...f, status: s })}
-            className={cn("whitespace-nowrap rounded-full border px-3 py-1 text-xs font-medium transition-colors",
-              f.status === s ? "border-primary bg-primary text-primary-foreground" : "bg-card hover:bg-muted")}>
-            {s || "Todas"} <span className="opacity-70">({s ? counts(s) : requests.length})</span>
-          </button>
-        ))}
-      </div>
+      <PageHeader title={titulo} subtitle={lista.data ? `${lista.data.total} solicitud(es)${user.rol === "ADMIN" ? " · consulta" : ""}` : undefined} />
+      <EstadoChips value={f.estado} onChange={(estado) => cambiar({ estado })} />
 
       <Panel className="mb-6">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          <div className="space-y-1.5 lg:col-span-2">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="space-y-1.5 sm:col-span-2">
             <Label htmlFor="q">Buscar</Label>
             <div className="relative">
               <Search className="pointer-events-none absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input id="q" className="pl-8" value={f.q} onChange={set("q")} placeholder="Código, asunto, estudiante o código de alumno" />
+              <Input id="q" className="pl-8" value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} placeholder="Código, asunto, estudiante o código de alumno" />
             </div>
           </div>
+          {central && (
+            <div className="space-y-1.5">
+              <Label htmlFor="ffac">Facultad</Label>
+              <select id="ffac" className={selectClass} value={f.facultadId ?? ""} onChange={(e) => cambiar({ facultadId: e.target.value ? Number(e.target.value) : undefined, tipoId: undefined })}>
+                <option value="">Todas</option>
+                {facultades.data?.map((x) => <option key={x.id} value={x.id}>{x.codigo}</option>)}
+              </select>
+            </div>
+          )}
           <div className="space-y-1.5">
             <Label htmlFor="ftype">Tipo de trámite</Label>
-            <select id="ftype" className={selectClass} value={f.typeId} onChange={set("typeId")}>
-              <option value="">Todos</option>
-              {types.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+            <select id="ftype" className={selectClass} value={f.tipoId ?? ""} disabled={central && !f.facultadId} onChange={(e) => cambiar({ tipoId: e.target.value ? Number(e.target.value) : undefined })}>
+              <option value="">{central && !f.facultadId ? "Elige una facultad" : "Todos"}</option>
+              {tipos.data?.map((t) => <option key={t.id} value={t.id}>{t.nombre}</option>)}
+            </select>
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="fprio">Prioridad</Label>
+            <select id="fprio" className={selectClass} value={f.prioridad ?? ""} onChange={(e) => cambiar({ prioridad: (e.target.value || undefined) as FiltrosSolicitudes["prioridad"] })}>
+              <option value="">Todas</option>
+              {PRIORIDADES.map((p) => <option key={p} value={p}>{prioridadLabel[p]}</option>)}
             </select>
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="ffrom">Desde</Label>
-            <Input id="ffrom" type="date" value={f.from} max={f.to || undefined} onChange={set("from")} />
+            <Input id="ffrom" type="date" value={f.desde ?? ""} max={f.hasta || undefined} onChange={(e) => cambiar({ desde: e.target.value || undefined })} />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="fto">Hasta</Label>
-            <Input id="fto" type="date" value={f.to} min={f.from || undefined} onChange={set("to")} />
+            <Input id="fto" type="date" value={f.hasta ?? ""} min={f.desde || undefined} onChange={(e) => cambiar({ hasta: e.target.value || undefined })} />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="forden">Ordenar por</Label>
+            <select id="forden" className={selectClass} value={f.orden ?? "recientes"} onChange={(e) => cambiar({ orden: e.target.value as FiltrosSolicitudes["orden"] })}>
+              <option value="prioridad">Prioridad (pendientes primero)</option>
+              <option value="vencimiento">Plazo más próximo</option>
+              <option value="recientes">Más recientes</option>
+            </select>
           </div>
         </div>
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" className="h-4 w-4 accent-[var(--primary)]" checked={f.mine} onChange={(e) => setF({ ...f, mine: e.target.checked })} />
-            Solo asignadas a mí
-          </label>
-          <Button variant="ghost" size="sm" disabled={!active} onClick={() => setF(EMPTY)}><FilterX className="h-4 w-4" />Limpiar filtros</Button>
+          <div className="flex flex-wrap gap-4">
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" className="h-4 w-4 accent-[var(--primary)]" checked={!!f.vencidas} onChange={(e) => cambiar({ vencidas: e.target.checked || undefined })} />
+              Solo vencidas
+            </label>
+            {user.rol === "SUPERVISOR" && (
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" className="h-4 w-4 accent-[var(--primary)]" checked={!!f.asignadasAMi} onChange={(e) => cambiar({ asignadasAMi: e.target.checked || undefined })} />
+                Solo asignadas a mí
+              </label>
+            )}
+          </div>
+          <Button variant="ghost" size="sm" disabled={!activos} onClick={limpiar}><FilterX className="h-4 w-4" />Limpiar filtros</Button>
         </div>
       </Panel>
 
-      {filtered.length ? <RequestTable requests={filtered} showStudent /> : (
-        <EmptyState title="No hay solicitudes que coincidan" text="Prueba con otros filtros o límpialos para ver toda la bandeja."
-          action={active ? <Button size="sm" variant="outline" onClick={() => setF(EMPTY)}>Limpiar filtros</Button> : undefined} />
+      {lista.isPending ? <LoadingState /> : lista.isError ? <ErrorState error={lista.error} onRetry={() => void lista.refetch()} /> : lista.data.items.length ? (
+        <>
+          <RequestTable requests={lista.data.items} showStudent showFaculty={central} />
+          <Pagination page={page} size={SIZE} total={lista.data.total} onPage={setPage} />
+        </>
+      ) : (
+        <EmptyState
+          title={activos ? "No hay solicitudes que coincidan" : user.rol === "TECNICO" ? "No tienes solicitudes asignadas" : "La bandeja está vacía"}
+          text={activos ? "Prueba con otros filtros o límpialos." : undefined}
+          action={activos ? <Button size="sm" variant="outline" onClick={limpiar}>Limpiar filtros</Button> : undefined}
+        />
       )}
     </>
   );
