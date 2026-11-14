@@ -1,0 +1,68 @@
+# Blueprint de Render para NexusFisi (Docker).
+# Render → New → Blueprint → elige este repositorio. Te pedirá los valores marcados sync:false.
+#
+# Un solo servicio web con la imagen combinada (Dockerfile.render): la interfaz
+# atiende en $PORT y reenvía /api a la API dentro del mismo contenedor. Así hay
+# un solo dominio (la cookie de sesión funciona sin configurar CORS) y no se
+# depende de la red privada de Render, que el plan gratuito limita.
+#
+# MySQL: Render no ofrece MySQL administrado. Usa uno externo (por ejemplo, el
+# plan gratuito de Aiven for MySQL) y pega su URL en DATABASE_URL. Ver docs/despliegue-render.md.
+services:
+  - type: web
+    name: nexusfisi
+    runtime: docker
+    dockerfilePath: ./Dockerfile.render
+    dockerContext: .
+    plan: free
+    region: virginia
+    healthCheckPath: /api/v1/health
+    # El despliegue lo dispara el pipeline de GitHub Actions (cd.yml) solo si el CI pasó.
+    autoDeploy: false
+    envVars:
+      - key: DATABASE_URL          # mysql://usuario:clave@host:puerto/base
+        sync: false
+      - key: DATABASE_SSL
+        value: "true"
+      - key: DATABASE_SSL_CA       # PEM de la CA del proveedor (Aiven: "CA certificate")
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 8h
+      - key: PUBLIC_URL            # https://nexusfisi.onrender.com (la URL que te asigne Render)
+        sync: false
+      - key: CORS_ORIGINS          # la misma URL pública
+        sync: false
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "465"
+      - key: SMTP_USER             # cuenta de Gmail que envía
+        sync: false
+      - key: SMTP_PASS             # contraseña de APLICACIÓN de Gmail (no la contraseña normal)
+        sync: false
+      - key: MAIL_FROM             # NexusFisi <cuenta@gmail.com>
+        sync: false
+      - key: MAIL_REDIRECT_TO      # en una demo: tu casilla (las cuentas demo no son buzones reales). Vacío en producción real.
+        sync: false
+      - key: SEED_DEMO_ON_START    # "true" para una demo: siembra datos de ejemplo si la base está vacía
+        value: "true"
+      - key: LOG_LEVEL
+        value: info
+
+# Alternativa sin servicio externo (requiere plan pago por el disco):
+#   - type: pserv
+#     name: nexusfisi-mysql
+#     runtime: image
+#     image: { url: docker.io/library/mysql:8.4 }
+#     plan: starter
+#     disk: { name: datos, mountPath: /var/lib/mysql, sizeGB: 5 }
+#     envVars:
+#       - { key: MYSQL_DATABASE, value: nexusfisi }
+#       - { key: MYSQL_USER, value: nexusfisi }
+#       - { key: MYSQL_PASSWORD, generateValue: true }
+#       - { key: MYSQL_ROOT_PASSWORD, generateValue: true }
+# y en el servicio web: DATABASE_URL=mysql://nexusfisi:<clave>@nexusfisi-mysql:3306/nexusfisi con DATABASE_SSL=false.
