@@ -33,7 +33,12 @@ const schema = z
     MAX_UPLOAD_MB: z.coerce.number().positive().max(20).default(5),
     // Intentos de login por minuto para cada combinación IP + correo (registro: el triple por IP).
     AUTH_RATE_LIMIT: z.coerce.number().int().positive().default(10),
-    // Correo saliente (recuperación de contraseña y avisos). Sin SMTP_HOST los correos solo se registran en el log.
+    // Correo saliente (recuperación de contraseña y avisos).
+    //  smtp   → servidor SMTP (Gmail, etc.). Render GRATIS bloquea los puertos SMTP (25/465/587).
+    //  brevo / resend → API HTTPS (puerto 443): funciona en Render gratis. Requiere MAIL_API_KEY.
+    // Sin proveedor configurado, los correos solo se registran en el log.
+    MAIL_PROVIDER: z.enum(["smtp", "brevo", "resend"]).optional(),
+    MAIL_API_KEY: z.string().optional(),
     SMTP_HOST: z.string().optional(),
     SMTP_PORT: z.coerce.number().int().positive().default(465),
     SMTP_USER: z.string().optional(),
@@ -53,6 +58,9 @@ const schema = z
   .superRefine((env, ctx) => {
     if (env.NODE_ENV === "production" && env.JWT_SECRET.startsWith("reemplaza")) {
       ctx.addIssue({ code: "custom", path: ["JWT_SECRET"], message: "JWT_SECRET es el valor de ejemplo; genera uno aleatorio para producción" });
+    }
+    if ((env.MAIL_PROVIDER === "brevo" || env.MAIL_PROVIDER === "resend") && (!env.MAIL_API_KEY || !env.MAIL_FROM)) {
+      ctx.addIssue({ code: "custom", path: ["MAIL_API_KEY"], message: `Con MAIL_PROVIDER=${env.MAIL_PROVIDER} hay que definir MAIL_API_KEY y MAIL_FROM` });
     }
     if (env.SMTP_HOST && (!env.SMTP_USER || !env.SMTP_PASS)) {
       ctx.addIssue({ code: "custom", path: ["SMTP_USER"], message: "Con SMTP_HOST hay que definir SMTP_USER y SMTP_PASS" });

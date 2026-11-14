@@ -27,11 +27,57 @@ ${parrafos}${boton}
 <p style="font-size:12px;color:#64748b;margin-top:24px">Mensaje automático de NexusFisi. No respondas a este correo.</p></div>`;
 }
 
-// SMTP si está configurado (p. ej. Gmail con contraseña de aplicación); si no,
-// los correos solo se registran en el log, para que el desarrollo no dependa de un buzón.
+// "Nombre <correo@dominio>" → partes.
+export function remitente(from: string): { nombre?: string; email: string } {
+  const m = /^\s*(.*?)\s*<\s*([^>]+)\s*>\s*$/.exec(from);
+  return m ? { ...(m[1] ? { nombre: m[1].replace(/^"|"$/g, "") } : {}), email: m[2]! } : { email: from.trim() };
+}
+
+// Envío por API HTTPS. Necesario en plataformas que bloquean SMTP (Render gratis).
+export function mailerHttp(proveedor: "brevo" | "resend", apiKey: string, from: string, fetchImpl: typeof fetch = fetch) {
+  const r = remitente(from);
+  return async (c: Correo) => {
+    const texto = c.texto + (c.boton ? `
+
+${c.boton.texto}: ${c.boton.url}` : "");
+    const res =
+      proveedor === "brevo"
+        ? await fetchImpl("https://api.brevo.com/v3/smtp/email", {
+            method: "POST",
+            headers: { "api-key": apiKey, "content-type": "application/json", accept: "application/json" },
+            body: JSON.stringify({ sender: { email: r.email, ...(r.nombre ? { name: r.nombre } : {}) }, to: [{ email: c.para }], subject: c.asunto, htmlContent: html(c), textContent: texto }),
+          })
+        : await fetchImpl("https://api.resend.com/emails", {
+            method: "POST",
+            headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
+            body: JSON.stringify({ from, to: [c.para], subject: c.asunto, html: html(c), text: texto }),
+          });
+    if (!res.ok) throw new Error(`${proveedor} respondió ${res.status}: ${(await res.text()).slice(0, 300)}`);
+  };
+}
+
+// Proveedor según la configuración. Sin ninguno, los correos solo se registran en
+// el log, para que el desarrollo no dependa de un buzón.
 export function crearMailer(env: Env, logger: Logger): Mailer {
   const redirigir = (c: Correo): Correo =>
     env.MAIL_REDIRECT_TO ? { ...c, para: env.MAIL_REDIRECT_TO, asunto: `[Demo → ${c.para}] ${c.asunto}` } : c;
+  const proveedor = env.MAIL_PROVIDER ?? (env.SMTP_HOST ? "smtp" : undefined);
+
+  if (proveedor === "brevo" || proveedor === "resend") {
+    const enviar = mailerHttp(proveedor, env.MAIL_API_KEY!, env.MAIL_FROM!);
+    logger.info({ proveedor }, "correo saliente por API HTTPS");
+    return {
+      async enviar(c) {
+        const r = redirigir(c);
+        await enviar(r);
+        logger.info({ para: r.para, asunto: r.asunto, proveedor }, "correo enviado");
+      },
+    };
+  }
+
+  if (proveedor === "smtp" && process.env["RENDER"]) {
+    logger.warn("Render gratis bloquea los puertos SMTP (25/465/587): usa MAIL_PROVIDER=brevo o resend");
+  }
 
   if (!env.SMTP_HOST) {
     return {

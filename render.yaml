@@ -32,15 +32,12 @@ services:
         value: 8h
       - key: COOKIE_SECURE
         value: "true"
-      - key: SMTP_HOST
-        value: smtp.gmail.com
-      - key: SMTP_PORT
-        value: "465"
-      - key: SMTP_USER             # cuenta de Gmail que envía
+      # Render GRATIS bloquea los puertos SMTP (25/465/587): el correo sale por la API HTTPS de Brevo.
+      - key: MAIL_PROVIDER
+        value: brevo
+      - key: MAIL_API_KEY          # Brevo → SMTP & API → API Keys
         sync: false
-      - key: SMTP_PASS             # contraseña de APLICACIÓN de Gmail (no la contraseña normal)
-        sync: false
-      - key: MAIL_FROM             # NexusFisi <cuenta@gmail.com>
+      - key: MAIL_FROM             # NexusFisi <correo verificado como remitente en Brevo>
         sync: false
       - key: MAIL_REDIRECT_TO      # en una demo: tu casilla (las cuentas demo no son buzones reales). Vacío en producción real.
         sync: false
