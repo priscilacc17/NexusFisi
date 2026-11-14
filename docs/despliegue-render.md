@@ -55,7 +55,7 @@ Los correos (recuperación de contraseña y avisos) se envían por SMTP de Gmail
 |---|---|
 | `DATABASE_URL` | La *Service URI* de Aiven, tal cual. |
 | `DATABASE_SSL_CA` | Contenido del *CA certificate* (PEM completo, `-----BEGIN CERTIFICATE-----…`). |
-| `PUBLIC_URL` y `CORS_ORIGINS` | La URL que te asigne Render, p. ej. `https://nexusfisi.onrender.com` (puedes completarla después del primer despliegue). |
+| `PUBLIC_URL` y `CORS_ORIGINS` | Pueden quedar **vacías**: la API usa la URL pública que Render inyecta (`RENDER_EXTERNAL_URL`). Defínelas solo si usas un dominio propio. |
 | `SMTP_USER` | La cuenta de Gmail que envía. |
 | `SMTP_PASS` | La contraseña de aplicación. |
 | `MAIL_FROM` | `NexusFisi <cuenta@gmail.com>` |
