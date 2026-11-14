@@ -28,10 +28,12 @@ Render no ofrece MySQL administrado. Opciones:
 Con Aiven:
 
 1. Crea el servicio MySQL en la región más cercana a la que elegiste en Render.
-2. Copia la *Service URI* y cámbiale el esquema a `mysql://usuario:clave@host:puerto/defaultdb`.
+2. Copia la *Service URI* tal cual (`mysql://avnadmin:…@….aivencloud.com:PUERTO/defaultdb?ssl-mode=REQUIRED`): la API entiende `ssl-mode` y activa TLS.
 3. Descarga el *CA certificate*.
 
-Las tablas las crea la propia API al arrancar (migraciones automáticas).
+Las tablas las crea la propia API al arrancar (migraciones automáticas): no hay que ejecutar nada en la base.
+
+> Algunas redes corporativas o universitarias bloquean la salida a puertos no estándar (Aiven usa uno alto, p. ej. 16370). Si desde tu equipo no conecta, no afecta a Render: allí la salida no está restringida.
 
 ## 2. Contraseña de aplicación de Gmail
 
@@ -51,7 +53,7 @@ Los correos (recuperación de contraseña y avisos) se envían por SMTP de Gmail
 
 | Variable | Valor |
 |---|---|
-| `DATABASE_URL` | `mysql://avnadmin:CLAVE@HOST.aivencloud.com:PUERTO/defaultdb` |
+| `DATABASE_URL` | La *Service URI* de Aiven, tal cual. |
 | `DATABASE_SSL_CA` | Contenido del *CA certificate* (PEM completo, `-----BEGIN CERTIFICATE-----…`). |
 | `PUBLIC_URL` y `CORS_ORIGINS` | La URL que te asigne Render, p. ej. `https://nexusfisi.onrender.com` (puedes completarla después del primer despliegue). |
 | `SMTP_USER` | La cuenta de Gmail que envía. |

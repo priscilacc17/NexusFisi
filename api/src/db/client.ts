@@ -10,9 +10,27 @@ export interface Database {
   close(): Promise<void>;
 }
 
-export function createDatabase(url: string, tls?: { ca?: string | undefined }): Database {
+// Los proveedores (Aiven, entre otros) entregan la URI con "?ssl-mode=REQUIRED",
+// un parámetro del cliente de consola de MySQL que el driver de Node no entiende.
+// Se quita de la URL y, si pide TLS, se activa.
+export function normalizarUrl(url: string): { uri: string; pideTls: boolean } {
+  const u = new URL(url);
+  let pideTls = false;
+  for (const clave of ["ssl-mode", "sslmode", "ssl_mode"]) {
+    const valor = u.searchParams.get(clave);
+    if (valor !== null) {
+      if (valor.toUpperCase() !== "DISABLED") pideTls = true;
+      u.searchParams.delete(clave);
+    }
+  }
+  return { uri: u.toString(), pideTls };
+}
+
+export function createDatabase(url: string, tlsConfig?: { ca?: string | undefined }): Database {
+  const { uri, pideTls } = normalizarUrl(url);
+  const tls = tlsConfig ?? (pideTls ? {} : undefined);
   const pool = mysql.createPool({
-    uri: url,
+    uri,
     // Todo se guarda y se lee en UTC; la zona de Lima solo se aplica al calcular plazos.
     timezone: "Z",
     connectionLimit: 10,
