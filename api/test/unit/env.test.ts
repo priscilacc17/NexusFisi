@@ -17,3 +17,16 @@ describe("configuración por variables de entorno", () => {
     expect(() => loadEnv({ ...base, SMTP_HOST: "smtp.gmail.com" })).toThrow(/SMTP_USER/);
   });
 });
+
+import { normalizarUrl } from "../../src/db/client.js";
+
+describe("URI de la base de datos", () => {
+  it("acepta la URI de Aiven con ?ssl-mode=REQUIRED: quita el parámetro y pide TLS", () => {
+    const r = normalizarUrl("mysql://avnadmin:clave@mysql-x.aivencloud.com:16370/defaultdb?ssl-mode=REQUIRED");
+    expect(r.uri).toBe("mysql://avnadmin:clave@mysql-x.aivencloud.com:16370/defaultdb");
+    expect(r.pideTls).toBe(true);
+  });
+  it("una URI local sin parámetros no cambia ni pide TLS", () => {
+    expect(normalizarUrl("mysql://u:p@127.0.0.1:3317/nexusfisi")).toEqual({ uri: "mysql://u:p@127.0.0.1:3317/nexusfisi", pideTls: false });
+  });
+});
