@@ -45,3 +45,45 @@ describe("adjuntos: tipo por contenido, no por extensión", () => {
     expect(limpiarNombre("a<b>c.pdf")).toBe("a_b_c.pdf");
   });
 });
+
+import { mailerHttp, remitente } from "../../src/lib/mailer.js";
+
+describe("correo por API HTTPS (Render bloquea SMTP)", () => {
+  const correo = { para: "a@unmsm.edu.pe", asunto: "Hola", texto: "Línea 1", boton: { texto: "Ver", url: "https://x.test/y" } };
+  const capturar = () => {
+    const llamadas: { url: string; init: RequestInit }[] = [];
+    const f = (async (url: string, init: RequestInit) => {
+      llamadas.push({ url, init });
+      return new Response("{}", { status: 201 });
+    }) as unknown as typeof fetch;
+    return { llamadas, f };
+  };
+
+  it("separa nombre y correo del remitente", () => {
+    expect(remitente("NexusFisi <nexus@gmail.com>")).toEqual({ nombre: "NexusFisi", email: "nexus@gmail.com" });
+    expect(remitente("nexus@gmail.com")).toEqual({ email: "nexus@gmail.com" });
+  });
+
+  it("Brevo: usa la cabecera api-key y el formato de su API", async () => {
+    const { llamadas, f } = capturar();
+    await mailerHttp("brevo", "clave", "NexusFisi <nexus@gmail.com>", f)(correo);
+    const body = JSON.parse(String(llamadas[0]!.init.body));
+    expect(llamadas[0]!.url).toBe("https://api.brevo.com/v3/smtp/email");
+    expect((llamadas[0]!.init.headers as Record<string, string>)["api-key"]).toBe("clave");
+    expect(body.sender).toEqual({ email: "nexus@gmail.com", name: "NexusFisi" });
+    expect(body.to).toEqual([{ email: "a@unmsm.edu.pe" }]);
+    expect(body.htmlContent).toContain("https://x.test/y");
+  });
+
+  it("Resend: usa Bearer y el formato de su API", async () => {
+    const { llamadas, f } = capturar();
+    await mailerHttp("resend", "clave", "NexusFisi <nexus@gmail.com>", f)(correo);
+    expect(llamadas[0]!.url).toBe("https://api.resend.com/emails");
+    expect((llamadas[0]!.init.headers as Record<string, string>)["authorization"]).toBe("Bearer clave");
+  });
+
+  it("un rechazo del proveedor se informa como error (para el log)", async () => {
+    const f = (async () => new Response("unauthorized", { status: 401 })) as unknown as typeof fetch;
+    await expect(mailerHttp("brevo", "mala", "x@y.com", f)(correo)).rejects.toThrow(/401/);
+  });
+});
