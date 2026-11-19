@@ -22,7 +22,15 @@ import {
 // las solicitudes de otra, y cada facultad numera sus expedientes por separado.
 
 export const ROLES = ["ESTUDIANTE", "TECNICO", "SUPERVISOR", "ADMIN"] as const;
-export const ESTADOS = ["REGISTRADA", "EN_EVALUACION", "OBSERVADA", "ASIGNADA", "EN_ATENCION", "RESUELTA", "CERRADA"] as const;
+export const ESTADOS = [
+  "REGISTRADA",
+  "EN_EVALUACION",
+  "OBSERVADA",
+  "ASIGNADA",
+  "EN_ATENCION",
+  "RESUELTA",
+  "CERRADA",
+] as const;
 export const PRIORIDADES = ["BAJA", "MEDIA", "ALTA", "URGENTE"] as const;
 export const TIPOS_CIERRE = ["CONFORME", "DESISTIDA", "SUPERVISOR"] as const;
 export const ETAPAS_ADJUNTO = ["REGISTRO", "CORRECCION", "ATENCION"] as const;
@@ -35,7 +43,10 @@ export type EtapaAdjunto = (typeof ETAPAS_ADJUNTO)[number];
 
 // Fechas en UTC con milisegundos; la conexión fija timezone "Z".
 const ts = (name: string) => datetime(name, { mode: "date", fsp: 3 });
-const creado = () => ts("created_at").notNull().default(sql`CURRENT_TIMESTAMP(3)`);
+const creado = () =>
+  ts("created_at")
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP(3)`);
 
 export const facultades = mysqlTable(
   "facultades",
@@ -46,14 +57,19 @@ export const facultades = mysqlTable(
     activa: boolean("activa").notNull().default(true),
     createdAt: creado(),
   },
-  (t) => [uniqueIndex("uq_facultades_codigo").on(t.codigo), uniqueIndex("uq_facultades_nombre").on(t.nombre)],
+  (t) => [
+    uniqueIndex("uq_facultades_codigo").on(t.codigo),
+    uniqueIndex("uq_facultades_nombre").on(t.nombre),
+  ],
 );
 
 export const escuelas = mysqlTable(
   "escuelas",
   {
     id: int("id").autoincrement().primaryKey(),
-    facultadId: int("facultad_id").notNull().references(() => facultades.id),
+    facultadId: int("facultad_id")
+      .notNull()
+      .references(() => facultades.id),
     nombre: varchar("nombre", { length: 160 }).notNull(),
     activa: boolean("activa").notNull().default(true),
   },
@@ -65,7 +81,9 @@ export const areas = mysqlTable(
   "areas",
   {
     id: int("id").autoincrement().primaryKey(),
-    facultadId: int("facultad_id").notNull().references(() => facultades.id),
+    facultadId: int("facultad_id")
+      .notNull()
+      .references(() => facultades.id),
     nombre: varchar("nombre", { length: 120 }).notNull(),
     ubicacion: varchar("ubicacion", { length: 200 }).notNull(),
     activa: boolean("activa").notNull().default(true),
@@ -104,8 +122,12 @@ export const tiposTramite = mysqlTable(
   "tipos_tramite",
   {
     id: int("id").autoincrement().primaryKey(),
-    facultadId: int("facultad_id").notNull().references(() => facultades.id),
-    areaId: int("area_id").notNull().references(() => areas.id),
+    facultadId: int("facultad_id")
+      .notNull()
+      .references(() => facultades.id),
+    areaId: int("area_id")
+      .notNull()
+      .references(() => areas.id),
     nombre: varchar("nombre", { length: 120 }).notNull(),
     descripcion: varchar("descripcion", { length: 500 }).notNull(),
     requisitos: json("requisitos").$type<string[]>().notNull(),
@@ -121,7 +143,9 @@ export const tiposTramite = mysqlTable(
 export const secuencias = mysqlTable(
   "secuencias",
   {
-    facultadId: int("facultad_id").notNull().references(() => facultades.id),
+    facultadId: int("facultad_id")
+      .notNull()
+      .references(() => facultades.id),
     anio: int("anio").notNull(),
     ultimo: int("ultimo").notNull(),
   },
@@ -133,9 +157,15 @@ export const solicitudes = mysqlTable(
   {
     id: int("id").autoincrement().primaryKey(),
     codigo: varchar("codigo", { length: 24 }).notNull(),
-    facultadId: int("facultad_id").notNull().references(() => facultades.id),
-    tipoId: int("tipo_id").notNull().references(() => tiposTramite.id),
-    estudianteId: int("estudiante_id").notNull().references(() => usuarios.id),
+    facultadId: int("facultad_id")
+      .notNull()
+      .references(() => facultades.id),
+    tipoId: int("tipo_id")
+      .notNull()
+      .references(() => tiposTramite.id),
+    estudianteId: int("estudiante_id")
+      .notNull()
+      .references(() => usuarios.id),
     responsableId: int("responsable_id").references(() => usuarios.id),
     asunto: varchar("asunto", { length: 120 }).notNull(),
     descripcion: text("descripcion").notNull(),
@@ -153,7 +183,9 @@ export const solicitudes = mysqlTable(
     // Bloqueo optimista: cada cambio exige la versión que vio el usuario.
     version: int("version").notNull().default(0),
     createdAt: creado(),
-    updatedAt: ts("updated_at").notNull().default(sql`CURRENT_TIMESTAMP(3)`),
+    updatedAt: ts("updated_at")
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP(3)`),
   },
   (t) => [
     uniqueIndex("uq_solicitudes_codigo").on(t.codigo),
@@ -167,24 +199,35 @@ export const adjuntos = mysqlTable(
   "adjuntos",
   {
     id: int("id").autoincrement().primaryKey(),
-    solicitudId: int("solicitud_id").notNull().references(() => solicitudes.id),
+    solicitudId: int("solicitud_id")
+      .notNull()
+      .references(() => solicitudes.id),
     nombreOriginal: varchar("nombre_original", { length: 200 }).notNull(),
     nombreAlmacenado: varchar("nombre_almacenado", { length: 80 }).notNull(),
     mime: varchar("mime", { length: 60 }).notNull(),
     tamano: int("tamano").notNull(),
     etapa: mysqlEnum("etapa", ETAPAS_ADJUNTO).notNull(),
-    subidoPor: int("subido_por").notNull().references(() => usuarios.id),
+    subidoPor: int("subido_por")
+      .notNull()
+      .references(() => usuarios.id),
     createdAt: creado(),
   },
-  (t) => [index("ix_adjuntos_solicitud").on(t.solicitudId), uniqueIndex("uq_adjuntos_almacenado").on(t.nombreAlmacenado)],
+  (t) => [
+    index("ix_adjuntos_solicitud").on(t.solicitudId),
+    uniqueIndex("uq_adjuntos_almacenado").on(t.nombreAlmacenado),
+  ],
 );
 
 export const observaciones = mysqlTable(
   "observaciones",
   {
     id: int("id").autoincrement().primaryKey(),
-    solicitudId: int("solicitud_id").notNull().references(() => solicitudes.id),
-    autorId: int("autor_id").notNull().references(() => usuarios.id),
+    solicitudId: int("solicitud_id")
+      .notNull()
+      .references(() => solicitudes.id),
+    autorId: int("autor_id")
+      .notNull()
+      .references(() => usuarios.id),
     texto: text("texto").notNull(),
     resuelta: boolean("resuelta").notNull().default(false),
     createdAt: creado(),
@@ -198,8 +241,12 @@ export const movimientos = mysqlTable(
   "movimientos",
   {
     id: int("id").autoincrement().primaryKey(),
-    solicitudId: int("solicitud_id").notNull().references(() => solicitudes.id),
-    usuarioId: int("usuario_id").notNull().references(() => usuarios.id),
+    solicitudId: int("solicitud_id")
+      .notNull()
+      .references(() => solicitudes.id),
+    usuarioId: int("usuario_id")
+      .notNull()
+      .references(() => usuarios.id),
     accion: varchar("accion", { length: 120 }).notNull(),
     estadoDesde: mysqlEnum("estado_desde", ESTADOS),
     estadoHasta: mysqlEnum("estado_hasta", ESTADOS),
@@ -213,8 +260,12 @@ export const mensajes = mysqlTable(
   "mensajes",
   {
     id: int("id").autoincrement().primaryKey(),
-    solicitudId: int("solicitud_id").notNull().references(() => solicitudes.id),
-    autorId: int("autor_id").notNull().references(() => usuarios.id),
+    solicitudId: int("solicitud_id")
+      .notNull()
+      .references(() => solicitudes.id),
+    autorId: int("autor_id")
+      .notNull()
+      .references(() => usuarios.id),
     texto: text("texto").notNull(),
     createdAt: creado(),
   },
@@ -225,7 +276,9 @@ export const notificaciones = mysqlTable(
   "notificaciones",
   {
     id: int("id").autoincrement().primaryKey(),
-    usuarioId: int("usuario_id").notNull().references(() => usuarios.id),
+    usuarioId: int("usuario_id")
+      .notNull()
+      .references(() => usuarios.id),
     solicitudId: int("solicitud_id").references(() => solicitudes.id),
     texto: varchar("texto", { length: 255 }).notNull(),
     leida: boolean("leida").notNull().default(false),
@@ -240,13 +293,18 @@ export const restablecimientos = mysqlTable(
   "restablecimientos",
   {
     id: int("id").autoincrement().primaryKey(),
-    usuarioId: int("usuario_id").notNull().references(() => usuarios.id),
+    usuarioId: int("usuario_id")
+      .notNull()
+      .references(() => usuarios.id),
     tokenHash: varchar("token_hash", { length: 64 }).notNull(),
     expiraAt: ts("expira_at").notNull(),
     usadoAt: ts("usado_at"),
     createdAt: creado(),
   },
-  (t) => [uniqueIndex("uq_restablecimientos_hash").on(t.tokenHash), index("ix_restablecimientos_usuario").on(t.usuarioId)],
+  (t) => [
+    uniqueIndex("uq_restablecimientos_hash").on(t.tokenHash),
+    index("ix_restablecimientos_usuario").on(t.usuarioId),
+  ],
 );
 
 const longblob = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () => "longblob" });

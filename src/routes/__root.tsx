@@ -80,8 +80,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "NexusFisi · Trámites académicos" },
-      { name: "description", content: "Plataforma de solicitudes y trámites académicos de la Facultad de Ingeniería de Sistemas e Informática (FISI) de la UNMSM." },
-            { property: "og:title", content: "NexusFisi" },
+      {
+        name: "description",
+        content:
+          "Plataforma de solicitudes y trámites académicos de la Facultad de Ingeniería de Sistemas e Informática (FISI) de la UNMSM.",
+      },
+      { property: "og:title", content: "NexusFisi" },
       { property: "og:description", content: "Trámites académicos de la FISI · UNMSM." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -93,7 +97,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Sora:wght@600;700&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Sora:wght@600;700&display=swap",
+      },
     ],
   }),
   shellComponent: RootShell,

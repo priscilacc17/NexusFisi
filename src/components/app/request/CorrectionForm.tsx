@@ -22,7 +22,8 @@ export function CorrectionForm({ s }: { s: SolicitudDetalle }) {
   const pendientes = s.observaciones.filter((o) => !o.resuelta);
 
   const enviar = async () => {
-    if (note.trim().length < 10) return setError("Explica la corrección realizada (mínimo 10 caracteres).");
+    if (note.trim().length < 10)
+      return setError("Explica la corrección realizada (mínimo 10 caracteres).");
     setError("");
     try {
       // Adjuntar no cambia la versión de la solicitud (solo las transiciones lo hacen).
@@ -37,12 +38,28 @@ export function CorrectionForm({ s }: { s: SolicitudDetalle }) {
   };
   return (
     <div className="rounded-xl border border-warning/60 bg-warning/10 p-5">
-      <p className="flex items-center gap-2 font-semibold"><AlertTriangle className="h-5 w-5 text-warning" />Tu solicitud fue observada</p>
-      <ul className="mt-2 space-y-1 text-sm">{pendientes.map((o) => <li key={o.id}>• {o.texto}</li>)}</ul>
+      <p className="flex items-center gap-2 font-semibold">
+        <AlertTriangle className="h-5 w-5 text-warning" />
+        Tu solicitud fue observada
+      </p>
+      <ul className="mt-2 space-y-1 text-sm">
+        {pendientes.map((o) => (
+          <li key={o.id}>• {o.texto}</li>
+        ))}
+      </ul>
       <div className="mt-4 space-y-3">
         <div className="space-y-1.5">
           <Label htmlFor="correction">Detalle de la corrección *</Label>
-          <Textarea id="correction" rows={3} className="bg-card" maxLength={1500} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Ej. Adjunto la carta firmada por el representante de la empresa." disabled={ocupado} />
+          <Textarea
+            id="correction"
+            rows={3}
+            className="bg-card"
+            maxLength={1500}
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="Ej. Adjunto la carta firmada por el representante de la empresa."
+            disabled={ocupado}
+          />
           <FieldError>{error}</FieldError>
         </div>
         <div className="space-y-1.5">
@@ -50,7 +67,9 @@ export function CorrectionForm({ s }: { s: SolicitudDetalle }) {
           <FilePicker files={files} onChange={setFiles} disabled={ocupado} />
         </div>
         <div className="flex justify-end">
-          <Button onClick={() => void enviar()} disabled={ocupado}>{ocupado && <Loader2 className="h-4 w-4 animate-spin" />}Enviar corrección</Button>
+          <Button onClick={() => void enviar()} disabled={ocupado}>
+            {ocupado && <Loader2 className="h-4 w-4 animate-spin" />}Enviar corrección
+          </Button>
         </div>
       </div>
     </div>

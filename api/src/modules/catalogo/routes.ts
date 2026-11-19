@@ -7,7 +7,13 @@ import type { AppEnv, Deps } from "../../lib/context.js";
 import { errores, ok, Ref } from "../../lib/openapi.js";
 
 const FacultadConEscuelas = z
-  .object({ id: z.number().int(), codigo: z.string(), nombre: z.string(), activa: z.boolean(), escuelas: z.array(Ref) })
+  .object({
+    id: z.number().int(),
+    codigo: z.string(),
+    nombre: z.string(),
+    activa: z.boolean(),
+    escuelas: z.array(Ref),
+  })
   .openapi("Facultad");
 
 export const TipoTramite = z
@@ -24,11 +30,22 @@ export const TipoTramite = z
   .openapi("TipoTramite");
 
 export const Area = z
-  .object({ id: z.number().int(), facultadId: z.number().int(), nombre: z.string(), ubicacion: z.string(), activa: z.boolean() })
+  .object({
+    id: z.number().int(),
+    facultadId: z.number().int(),
+    nombre: z.string(),
+    ubicacion: z.string(),
+    activa: z.boolean(),
+  })
   .openapi("Area");
 
 const FiltroFacultad = z.object({
-  facultadId: z.coerce.number().int().positive().optional().openapi({ description: "Solo administrador central; el resto ve su facultad." }),
+  facultadId: z.coerce
+    .number()
+    .int()
+    .positive()
+    .optional()
+    .openapi({ description: "Solo administrador central; el resto ve su facultad." }),
   incluirInactivos: z.enum(["true", "false"]).optional(),
 });
 
@@ -36,14 +53,37 @@ export async function obtenerTipo(deps: Deps, id: number) {
   return (await listarTipos(deps, null, true, id))[0];
 }
 
-export async function listarTipos(deps: Deps, facultadId: number | null, incluirInactivos: boolean, id?: number) {
+export async function listarTipos(
+  deps: Deps,
+  facultadId: number | null,
+  incluirInactivos: boolean,
+  id?: number,
+) {
   const filas = await deps.db
-    .select({ t: tiposTramite, a: { id: areas.id, nombre: areas.nombre, ubicacion: areas.ubicacion } })
+    .select({
+      t: tiposTramite,
+      a: { id: areas.id, nombre: areas.nombre, ubicacion: areas.ubicacion },
+    })
     .from(tiposTramite)
     .innerJoin(areas, eq(areas.id, tiposTramite.areaId))
-    .where(and(id ? eq(tiposTramite.id, id) : undefined, facultadId ? eq(tiposTramite.facultadId, facultadId) : undefined, incluirInactivos ? undefined : eq(tiposTramite.activo, true)))
+    .where(
+      and(
+        id ? eq(tiposTramite.id, id) : undefined,
+        facultadId ? eq(tiposTramite.facultadId, facultadId) : undefined,
+        incluirInactivos ? undefined : eq(tiposTramite.activo, true),
+      ),
+    )
     .orderBy(asc(tiposTramite.nombre));
-  return filas.map(({ t, a }) => ({ id: t.id, facultadId: t.facultadId, nombre: t.nombre, descripcion: t.descripcion, requisitos: t.requisitos, plazoDias: t.plazoDias, activo: t.activo, area: a }));
+  return filas.map(({ t, a }) => ({
+    id: t.id,
+    facultadId: t.facultadId,
+    nombre: t.nombre,
+    descripcion: t.descripcion,
+    requisitos: t.requisitos,
+    plazoDias: t.plazoDias,
+    activo: t.activo,
+    area: a,
+  }));
 }
 
 export function catalogoRoutes(deps: Deps) {
@@ -53,15 +93,34 @@ export function catalogoRoutes(deps: Deps) {
 
   app.openapi(
     createRoute({
-      method: "get", path: "/facultades", tags: ["Catálogo"], summary: "Facultades activas con sus escuelas",
+      method: "get",
+      path: "/facultades",
+      tags: ["Catálogo"],
+      summary: "Facultades activas con sus escuelas",
       description: "Público: lo usa el formulario de registro.",
       responses: { 200: ok(z.array(FacultadConEscuelas)) },
     }),
     async (c) => {
-      const facs = await deps.db.select().from(facultades).where(eq(facultades.activa, true)).orderBy(asc(facultades.nombre));
-      const escs = await deps.db.select().from(escuelas).where(eq(escuelas.activa, true)).orderBy(asc(escuelas.nombre));
+      const facs = await deps.db
+        .select()
+        .from(facultades)
+        .where(eq(facultades.activa, true))
+        .orderBy(asc(facultades.nombre));
+      const escs = await deps.db
+        .select()
+        .from(escuelas)
+        .where(eq(escuelas.activa, true))
+        .orderBy(asc(escuelas.nombre));
       return c.json(
-        facs.map((f) => ({ id: f.id, codigo: f.codigo, nombre: f.nombre, activa: f.activa, escuelas: escs.filter((e) => e.facultadId === f.id).map((e) => ({ id: e.id, nombre: e.nombre })) })),
+        facs.map((f) => ({
+          id: f.id,
+          codigo: f.codigo,
+          nombre: f.nombre,
+          activa: f.activa,
+          escuelas: escs
+            .filter((e) => e.facultadId === f.id)
+            .map((e) => ({ id: e.id, nombre: e.nombre })),
+        })),
         200,
       );
     },
@@ -69,7 +128,11 @@ export function catalogoRoutes(deps: Deps) {
 
   app.openapi(
     createRoute({
-      method: "get", path: "/tipos-tramite", tags: ["Catálogo"], summary: "Tipos de trámite de la facultad", security: [{ bearerAuth: [] }],
+      method: "get",
+      path: "/tipos-tramite",
+      tags: ["Catálogo"],
+      summary: "Tipos de trámite de la facultad",
+      security: [{ bearerAuth: [] }],
       request: { query: FiltroFacultad },
       responses: { 200: ok(z.array(TipoTramite)), 401: errores[401] },
     }),
@@ -84,7 +147,11 @@ export function catalogoRoutes(deps: Deps) {
 
   app.openapi(
     createRoute({
-      method: "get", path: "/areas", tags: ["Catálogo"], summary: "Áreas responsables de la facultad", security: [{ bearerAuth: [] }],
+      method: "get",
+      path: "/areas",
+      tags: ["Catálogo"],
+      summary: "Áreas responsables de la facultad",
+      security: [{ bearerAuth: [] }],
       request: { query: FiltroFacultad },
       responses: { 200: ok(z.array(Area)), 401: errores[401] },
     }),
@@ -95,7 +162,12 @@ export function catalogoRoutes(deps: Deps) {
       const filas = await deps.db
         .select()
         .from(areas)
-        .where(and(fac ? eq(areas.facultadId, fac) : undefined, q.incluirInactivos === "true" ? undefined : eq(areas.activa, true)))
+        .where(
+          and(
+            fac ? eq(areas.facultadId, fac) : undefined,
+            q.incluirInactivos === "true" ? undefined : eq(areas.activa, true),
+          ),
+        )
         .orderBy(asc(areas.nombre));
       return c.json(filas, 200);
     },

@@ -30,17 +30,32 @@ export function Adjuntos({ s }: { s: SolicitudDetalle }) {
   return (
     <Panel>
       <p className="font-semibold">Documentos ({s.adjuntos.length})</p>
-      {s.adjuntos.length === 0 ? <p className="mt-3 text-sm text-muted-foreground">Sin documentos.</p> : (
+      {s.adjuntos.length === 0 ? (
+        <p className="mt-3 text-sm text-muted-foreground">Sin documentos.</p>
+      ) : (
         <ul className="mt-3 divide-y rounded-lg border">
           {s.adjuntos.map((a) => (
             <li key={a.id} className="flex items-center gap-3 px-3 py-2.5 text-sm">
               <FileText className="h-4 w-4 shrink-0 text-primary" />
               <div className="min-w-0 flex-1">
                 <p className="truncate">{a.nombre}</p>
-                <p className="text-xs text-muted-foreground">{etapaLabel[a.etapa]} · {a.subidoPor} · {fmtSize(a.tamano)} · {fmtDate(a.createdAt)}</p>
+                <p className="text-xs text-muted-foreground">
+                  {etapaLabel[a.etapa]} · {a.subidoPor} · {fmtSize(a.tamano)} ·{" "}
+                  {fmtDate(a.createdAt)}
+                </p>
               </div>
-              <Button variant="ghost" size="icon" aria-label={`Descargar ${a.nombre}`} disabled={bajando === a.id} onClick={() => void bajar(a.id, a.nombre)}>
-                {bajando === a.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label={`Descargar ${a.nombre}`}
+                disabled={bajando === a.id}
+                onClick={() => void bajar(a.id, a.nombre)}
+              >
+                {bajando === a.id ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Download className="h-4 w-4" />
+                )}
               </Button>
             </li>
           ))}
@@ -51,11 +66,25 @@ export function Adjuntos({ s }: { s: SolicitudDetalle }) {
           <p className="text-sm font-medium">Adjuntar el resultado (constancia, resolución…)</p>
           <FilePicker files={files} onChange={setFiles} disabled={adjuntar.isPending} />
           <div className="flex justify-end">
-            <Button size="sm" disabled={!files.length || adjuntar.isPending} onClick={() => adjuntar.mutate(files, {
-              onSuccess: () => { setFiles([]); toast.success("Documentos adjuntados."); },
-              onError: (e) => toast.error(mensajeDeError(e)),
-            })}>
-              {adjuntar.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}Subir documentos
+            <Button
+              size="sm"
+              disabled={!files.length || adjuntar.isPending}
+              onClick={() =>
+                adjuntar.mutate(files, {
+                  onSuccess: () => {
+                    setFiles([]);
+                    toast.success("Documentos adjuntados.");
+                  },
+                  onError: (e) => toast.error(mensajeDeError(e)),
+                })
+              }
+            >
+              {adjuntar.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Upload className="h-4 w-4" />
+              )}
+              Subir documentos
             </Button>
           </div>
         </div>
