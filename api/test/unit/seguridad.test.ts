@@ -24,7 +24,9 @@ describe("JWT", () => {
     const t = await firmarToken({ sub: "7", rol: "TECNICO", fac: 3, tv: 0 }, secreto, "1h");
     expect(await verificarToken(t, "y".repeat(40))).toBeNull();
     const [h, p, s] = t.split(".");
-    const pAlterado = Buffer.from(JSON.stringify({ ...JSON.parse(Buffer.from(p!, "base64url").toString()), rol: "ADMIN" })).toString("base64url");
+    const pAlterado = Buffer.from(
+      JSON.stringify({ ...JSON.parse(Buffer.from(p!, "base64url").toString()), rol: "ADMIN" }),
+    ).toString("base64url");
     expect(await verificarToken(`${h}.${pAlterado}.${s}`, secreto)).toBeNull();
   });
 });
@@ -33,7 +35,9 @@ describe("adjuntos: tipo por contenido, no por extensión", () => {
   const bytes = (...b: number[]) => new Uint8Array([...b, 0, 0, 0, 0, 0, 0, 0, 0]);
   it("reconoce PDF, PNG y JPG", () => {
     expect(detectarTipo(new TextEncoder().encode("%PDF-1.7 ..."))?.mime).toBe("application/pdf");
-    expect(detectarTipo(bytes(0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a))?.mime).toBe("image/png");
+    expect(detectarTipo(bytes(0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a))?.mime).toBe(
+      "image/png",
+    );
     expect(detectarTipo(bytes(0xff, 0xd8, 0xff, 0xe0))?.mime).toBe("image/jpeg");
   });
   it("rechaza un ejecutable o texto aunque se llame .pdf", () => {
@@ -49,7 +53,12 @@ describe("adjuntos: tipo por contenido, no por extensión", () => {
 import { mailerHttp, remitente } from "../../src/lib/mailer.js";
 
 describe("correo por API HTTPS (Render bloquea SMTP)", () => {
-  const correo = { para: "a@unmsm.edu.pe", asunto: "Hola", texto: "Línea 1", boton: { texto: "Ver", url: "https://x.test/y" } };
+  const correo = {
+    para: "a@unmsm.edu.pe",
+    asunto: "Hola",
+    texto: "Línea 1",
+    boton: { texto: "Ver", url: "https://x.test/y" },
+  };
   const capturar = () => {
     const llamadas: { url: string; init: RequestInit }[] = [];
     const f = (async (url: string, init: RequestInit) => {
@@ -60,7 +69,10 @@ describe("correo por API HTTPS (Render bloquea SMTP)", () => {
   };
 
   it("separa nombre y correo del remitente", () => {
-    expect(remitente("NexusFisi <nexus@gmail.com>")).toEqual({ nombre: "NexusFisi", email: "nexus@gmail.com" });
+    expect(remitente("NexusFisi <nexus@gmail.com>")).toEqual({
+      nombre: "NexusFisi",
+      email: "nexus@gmail.com",
+    });
     expect(remitente("nexus@gmail.com")).toEqual({ email: "nexus@gmail.com" });
   });
 
@@ -79,11 +91,14 @@ describe("correo por API HTTPS (Render bloquea SMTP)", () => {
     const { llamadas, f } = capturar();
     await mailerHttp("resend", "clave", "NexusFisi <nexus@gmail.com>", f)(correo);
     expect(llamadas[0]!.url).toBe("https://api.resend.com/emails");
-    expect((llamadas[0]!.init.headers as Record<string, string>)["authorization"]).toBe("Bearer clave");
+    expect((llamadas[0]!.init.headers as Record<string, string>)["authorization"]).toBe(
+      "Bearer clave",
+    );
   });
 
   it("un rechazo del proveedor se informa como error (para el log)", async () => {
-    const f = (async () => new Response("unauthorized", { status: 401 })) as unknown as typeof fetch;
+    const f = (async () =>
+      new Response("unauthorized", { status: 401 })) as unknown as typeof fetch;
     await expect(mailerHttp("brevo", "mala", "x@y.com", f)(correo)).rejects.toThrow(/401/);
   });
 });

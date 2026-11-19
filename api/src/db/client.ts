@@ -37,7 +37,14 @@ export function createDatabase(url: string, tlsConfig?: { ca?: string | undefine
     multipleStatements: false,
     // TLS verificado contra las CA públicas o contra la CA del proveedor. En los
     // paneles de variables el PEM suele pegarse con "\n" literales: se restauran.
-    ...(tls ? { ssl: { rejectUnauthorized: true, ...(tls.ca ? { ca: tls.ca.replace(/\\n/g, "\n") } : {}) } } : {}),
+    ...(tls
+      ? {
+          ssl: {
+            rejectUnauthorized: true,
+            ...(tls.ca ? { ca: tls.ca.replace(/\\n/g, "\n") } : {}),
+          },
+        }
+      : {}),
   });
   const db = drizzle(pool, { schema, mode: "default" });
   return { db, pool, close: () => pool.end() };

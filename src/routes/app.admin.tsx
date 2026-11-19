@@ -10,7 +10,12 @@ import { useFacultadesAdmin } from "@/lib/api/queries";
 import { useUsuario } from "@/lib/session";
 
 export const Route = createFileRoute("/app/admin")({
-  head: () => ({ meta: [{ title: "Administración · NexusFisi" }, { name: "description", content: "Usuarios, roles, trámites, áreas y facultades." }] }),
+  head: () => ({
+    meta: [
+      { title: "Administración · NexusFisi" },
+      { name: "description", content: "Usuarios, roles, trámites, áreas y facultades." },
+    ],
+  }),
   component: Admin,
 });
 
@@ -21,7 +26,17 @@ function Admin() {
   const [facSel, setFacSel] = useState<number | undefined>();
   const [tab, setTab] = useState("usuarios");
 
-  if (user.rol !== "ADMIN") return <EmptyState title="Sección exclusiva para administradores" action={<Button asChild size="sm"><Link to="/app">Ir al panel</Link></Button>} />;
+  if (user.rol !== "ADMIN")
+    return (
+      <EmptyState
+        title="Sección exclusiva para administradores"
+        action={
+          <Button asChild size="sm">
+            <Link to="/app">Ir al panel</Link>
+          </Button>
+        }
+      />
+    );
 
   // El administrador de facultad siempre trabaja sobre la suya. El central elige;
   // trámites y áreas necesitan una facultad concreta.
@@ -32,13 +47,28 @@ function Admin() {
     <>
       <PageHeader
         title="Administración"
-        subtitle={central ? "Administración central · Universidad Nacional Mayor de San Marcos" : user.facultad?.nombre}
-        action={central ? (
-          <select aria-label="Facultad a administrar" className={`${selectClass} sm:w-80`} value={facSel ?? ""} onChange={(e) => setFacSel(e.target.value ? Number(e.target.value) : undefined)}>
-            <option value="">Todas las facultades</option>
-            {facs.data?.map((f) => <option key={f.id} value={f.id}>{f.codigo} · {f.nombre}</option>)}
-          </select>
-        ) : undefined}
+        subtitle={
+          central
+            ? "Administración central · Universidad Nacional Mayor de San Marcos"
+            : user.facultad?.nombre
+        }
+        action={
+          central ? (
+            <select
+              aria-label="Facultad a administrar"
+              className={`${selectClass} sm:w-80`}
+              value={facSel ?? ""}
+              onChange={(e) => setFacSel(e.target.value ? Number(e.target.value) : undefined)}
+            >
+              <option value="">Todas las facultades</option>
+              {facs.data?.map((f) => (
+                <option key={f.id} value={f.id}>
+                  {f.codigo} · {f.nombre}
+                </option>
+              ))}
+            </select>
+          ) : undefined
+        }
       />
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="mb-4 flex h-auto flex-wrap justify-start">
@@ -49,16 +79,29 @@ function Admin() {
           <TabsTrigger value="flujo">Estados y prioridades</TabsTrigger>
         </TabsList>
         {necesitaFacultad ? (
-          <EmptyState title="Elige una facultad" text="Los trámites y las áreas pertenecen a una facultad. Selecciónala arriba a la derecha." />
+          <EmptyState
+            title="Elige una facultad"
+            text="Los trámites y las áreas pertenecen a una facultad. Selecciónala arriba a la derecha."
+          />
         ) : (
           <>
-            <TabsContent value="usuarios"><UsuariosTab yo={user} facultadId={facultadId} /></TabsContent>
-            <TabsContent value="tramites"><TramitesTab key={facultadId} facultadId={facultadId} /></TabsContent>
-            <TabsContent value="areas"><AreasTab key={facultadId} facultadId={facultadId} /></TabsContent>
+            <TabsContent value="usuarios">
+              <UsuariosTab yo={user} facultadId={facultadId} />
+            </TabsContent>
+            <TabsContent value="tramites">
+              <TramitesTab key={facultadId} facultadId={facultadId} />
+            </TabsContent>
+            <TabsContent value="areas">
+              <AreasTab key={facultadId} facultadId={facultadId} />
+            </TabsContent>
           </>
         )}
-        <TabsContent value="facultades"><FacultadesTab central={central} /></TabsContent>
-        <TabsContent value="flujo"><FlujoReferencia /></TabsContent>
+        <TabsContent value="facultades">
+          <FacultadesTab central={central} />
+        </TabsContent>
+        <TabsContent value="flujo">
+          <FlujoReferencia />
+        </TabsContent>
       </Tabs>
     </>
   );

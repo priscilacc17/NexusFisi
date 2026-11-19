@@ -20,11 +20,11 @@ services:
     # El despliegue lo dispara el pipeline de GitHub Actions (cd.yml) solo si el CI pasó.
     autoDeploy: false
     envVars:
-      - key: DATABASE_URL          # mysql://usuario:clave@host:puerto/base
+      - key: DATABASE_URL # mysql://usuario:clave@host:puerto/base
         sync: false
       - key: DATABASE_SSL
         value: "true"
-      - key: DATABASE_SSL_CA       # PEM de la CA del proveedor (Aiven: "CA certificate")
+      - key: DATABASE_SSL_CA # PEM de la CA del proveedor (Aiven: "CA certificate")
         sync: false
       - key: JWT_SECRET
         generateValue: true
@@ -35,13 +35,13 @@ services:
       # Render GRATIS bloquea los puertos SMTP (25/465/587): el correo sale por la API HTTPS de Brevo.
       - key: MAIL_PROVIDER
         value: brevo
-      - key: MAIL_API_KEY          # Brevo → SMTP & API → API Keys
+      - key: MAIL_API_KEY # Brevo → SMTP & API → API Keys
         sync: false
-      - key: MAIL_FROM             # NexusFisi <correo verificado como remitente en Brevo>
+      - key: MAIL_FROM # NexusFisi <correo verificado como remitente en Brevo>
         sync: false
-      - key: MAIL_REDIRECT_TO      # en una demo: tu casilla (las cuentas demo no son buzones reales). Vacío en producción real.
+      - key: MAIL_REDIRECT_TO # en una demo: tu casilla (las cuentas demo no son buzones reales). Vacío en producción real.
         sync: false
-      - key: SEED_DEMO_ON_START    # "true" para una demo: siembra datos de ejemplo si la base está vacía
+      - key: SEED_DEMO_ON_START # "true" para una demo: siembra datos de ejemplo si la base está vacía
         value: "true"
       - key: LOG_LEVEL
         value: info

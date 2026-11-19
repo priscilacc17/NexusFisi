@@ -11,7 +11,13 @@ describe("configuración por variables de entorno", () => {
     expect(env.STORAGE_DRIVER).toBe("disk");
   });
   it("rechaza el JWT_SECRET de ejemplo en producción", () => {
-    expect(() => loadEnv({ ...base, NODE_ENV: "production", JWT_SECRET: "reemplaza-esto-por-un-secreto-aleatorio-de-48-bytes" })).toThrow(/JWT_SECRET/);
+    expect(() =>
+      loadEnv({
+        ...base,
+        NODE_ENV: "production",
+        JWT_SECRET: "reemplaza-esto-por-un-secreto-aleatorio-de-48-bytes",
+      }),
+    ).toThrow(/JWT_SECRET/);
   });
   it("exige usuario y contraseña si se configura SMTP", () => {
     expect(() => loadEnv({ ...base, SMTP_HOST: "smtp.gmail.com" })).toThrow(/SMTP_USER/);
@@ -22,23 +28,37 @@ import { normalizarUrl } from "../../src/db/client.js";
 
 describe("URI de la base de datos", () => {
   it("acepta la URI de Aiven con ?ssl-mode=REQUIRED: quita el parámetro y pide TLS", () => {
-    const r = normalizarUrl("mysql://avnadmin:clave@mysql-x.aivencloud.com:16370/defaultdb?ssl-mode=REQUIRED");
+    const r = normalizarUrl(
+      "mysql://avnadmin:clave@mysql-x.aivencloud.com:16370/defaultdb?ssl-mode=REQUIRED",
+    );
     expect(r.uri).toBe("mysql://avnadmin:clave@mysql-x.aivencloud.com:16370/defaultdb");
     expect(r.pideTls).toBe(true);
   });
   it("una URI local sin parámetros no cambia ni pide TLS", () => {
-    expect(normalizarUrl("mysql://u:p@127.0.0.1:3317/nexusfisi")).toEqual({ uri: "mysql://u:p@127.0.0.1:3317/nexusfisi", pideTls: false });
+    expect(normalizarUrl("mysql://u:p@127.0.0.1:3317/nexusfisi")).toEqual({
+      uri: "mysql://u:p@127.0.0.1:3317/nexusfisi",
+      pideTls: false,
+    });
   });
 });
 
 describe("Render", () => {
   it("sin PUBLIC_URL ni CORS_ORIGINS usa la URL que inyecta Render", () => {
-    const env = loadEnv({ ...base, RENDER_EXTERNAL_URL: "https://nexusfisi.onrender.com", PUBLIC_URL: "", CORS_ORIGINS: "" });
+    const env = loadEnv({
+      ...base,
+      RENDER_EXTERNAL_URL: "https://nexusfisi.onrender.com",
+      PUBLIC_URL: "",
+      CORS_ORIGINS: "",
+    });
     expect(env.PUBLIC_URL).toBe("https://nexusfisi.onrender.com");
     expect(env.CORS_ORIGINS).toEqual(["https://nexusfisi.onrender.com"]);
   });
   it("si se definen, mandan los valores propios", () => {
-    const env = loadEnv({ ...base, RENDER_EXTERNAL_URL: "https://nexusfisi.onrender.com", PUBLIC_URL: "https://tramites.unmsm.edu.pe" });
+    const env = loadEnv({
+      ...base,
+      RENDER_EXTERNAL_URL: "https://nexusfisi.onrender.com",
+      PUBLIC_URL: "https://tramites.unmsm.edu.pe",
+    });
     expect(env.PUBLIC_URL).toBe("https://tramites.unmsm.edu.pe");
   });
 });

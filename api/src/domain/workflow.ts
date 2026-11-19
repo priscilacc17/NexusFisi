@@ -47,9 +47,12 @@ export interface EstadoSolicitud {
   reaperturas: number;
 }
 
-const esSupervisor = (a: Actor, s: EstadoSolicitud) => a.rol === "SUPERVISOR" && a.facultadId === s.facultadId;
+const esSupervisor = (a: Actor, s: EstadoSolicitud) =>
+  a.rol === "SUPERVISOR" && a.facultadId === s.facultadId;
 const esResponsable = (a: Actor, s: EstadoSolicitud) =>
-  (a.rol === "TECNICO" || a.rol === "SUPERVISOR") && a.facultadId === s.facultadId && a.id === s.responsableId;
+  (a.rol === "TECNICO" || a.rol === "SUPERVISOR") &&
+  a.facultadId === s.facultadId &&
+  a.id === s.responsableId;
 const esDueno = (a: Actor, s: EstadoSolicitud) => a.rol === "ESTUDIANTE" && a.id === s.estudianteId;
 
 const REGLAS: Record<Accion, (a: Actor, s: EstadoSolicitud) => boolean> = {
@@ -58,12 +61,15 @@ const REGLAS: Record<Accion, (a: Actor, s: EstadoSolicitud) => boolean> = {
     (s.estado === "EN_EVALUACION" && esSupervisor(a, s)) ||
     (s.estado === "EN_ATENCION" && (esSupervisor(a, s) || esResponsable(a, s))),
   ASIGNAR: (a, s) => s.estado === "EN_EVALUACION" && esSupervisor(a, s),
-  REASIGNAR: (a, s) => (s.estado === "ASIGNADA" || s.estado === "EN_ATENCION") && esSupervisor(a, s),
+  REASIGNAR: (a, s) =>
+    (s.estado === "ASIGNADA" || s.estado === "EN_ATENCION") && esSupervisor(a, s),
   INICIAR_ATENCION: (a, s) => s.estado === "ASIGNADA" && esResponsable(a, s),
   RESOLVER: (a, s) => s.estado === "EN_ATENCION" && (esResponsable(a, s) || esSupervisor(a, s)),
   CERRAR: (a, s) => s.estado === "RESUELTA" && (esDueno(a, s) || esSupervisor(a, s)),
   CORREGIR: (a, s) => s.estado === "OBSERVADA" && esDueno(a, s),
-  DESISTIR: (a, s) => (s.estado === "REGISTRADA" || s.estado === "EN_EVALUACION" || s.estado === "OBSERVADA") && esDueno(a, s),
+  DESISTIR: (a, s) =>
+    (s.estado === "REGISTRADA" || s.estado === "EN_EVALUACION" || s.estado === "OBSERVADA") &&
+    esDueno(a, s),
   REABRIR: (a, s) => s.estado === "RESUELTA" && esDueno(a, s) && s.reaperturas < MAX_REAPERTURAS,
   PRIORIZAR: (a, s) => !ESTADOS_FINALES.includes(s.estado) && esSupervisor(a, s),
 };
@@ -112,7 +118,9 @@ export function validarDatos(accion: Accion, d: DatosAccion): string | null {
   const largo = (v: string | undefined, min: number) => (v?.trim().length ?? 0) >= min;
   switch (accion) {
     case "OBSERVAR":
-      return largo(d.nota, 10) ? null : "Describe la observación para el estudiante (mínimo 10 caracteres).";
+      return largo(d.nota, 10)
+        ? null
+        : "Describe la observación para el estudiante (mínimo 10 caracteres).";
     case "CORREGIR":
       return largo(d.nota, 10) ? null : "Explica la corrección realizada (mínimo 10 caracteres).";
     case "REABRIR":
@@ -120,7 +128,9 @@ export function validarDatos(accion: Accion, d: DatosAccion): string | null {
     case "DESISTIR":
       return largo(d.nota, 5) ? null : "Indica el motivo del desistimiento (mínimo 5 caracteres).";
     case "RESOLVER":
-      return largo(d.respuesta, 10) ? null : "Escribe la respuesta para el estudiante (mínimo 10 caracteres).";
+      return largo(d.respuesta, 10)
+        ? null
+        : "Escribe la respuesta para el estudiante (mínimo 10 caracteres).";
     case "ASIGNAR":
     case "REASIGNAR":
       return d.responsableId ? null : "Selecciona un responsable.";
@@ -141,7 +151,12 @@ export const ETIQUETA_ESTADO: Record<Estado, string> = {
   CERRADA: "Cerrada",
 };
 
-export const ETIQUETA_PRIORIDAD: Record<Prioridad, string> = { BAJA: "Baja", MEDIA: "Media", ALTA: "Alta", URGENTE: "Urgente" };
+export const ETIQUETA_PRIORIDAD: Record<Prioridad, string> = {
+  BAJA: "Baja",
+  MEDIA: "Media",
+  ALTA: "Alta",
+  URGENTE: "Urgente",
+};
 
 export const ETIQUETA_ACCION: Record<Accion, string> = {
   EVALUAR: "Evaluación iniciada",

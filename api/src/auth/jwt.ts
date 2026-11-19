@@ -11,7 +11,11 @@ export interface Claims {
   tv: number;
 }
 
-export async function firmarToken(claims: Claims, secret: string, expiresIn: string): Promise<string> {
+export async function firmarToken(
+  claims: Claims,
+  secret: string,
+  expiresIn: string,
+): Promise<string> {
   return new SignJWT({ rol: claims.rol, fac: claims.fac, tv: claims.tv })
     .setProtectedHeader({ alg: "HS256", typ: "JWT" })
     .setSubject(claims.sub)
@@ -30,7 +34,12 @@ export async function verificarToken(token: string, secret: string): Promise<Cla
       algorithms: ["HS256"],
     });
     if (typeof payload.sub !== "string" || typeof payload["tv"] !== "number") return null;
-    return { sub: payload.sub, rol: payload["rol"] as Rol, fac: (payload["fac"] as number | null) ?? null, tv: payload["tv"] as number };
+    return {
+      sub: payload.sub,
+      rol: payload["rol"] as Rol,
+      fac: (payload["fac"] as number | null) ?? null,
+      tv: payload["tv"] as number,
+    };
   } catch {
     return null;
   }

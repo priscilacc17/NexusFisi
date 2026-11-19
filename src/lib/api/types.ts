@@ -1,16 +1,39 @@
 // Tipos de la API REST de NexusFisi (ver /api/docs). Reflejan los esquemas OpenAPI.
 
 export type Rol = "ESTUDIANTE" | "TECNICO" | "SUPERVISOR" | "ADMIN";
-export type Estado = "REGISTRADA" | "EN_EVALUACION" | "OBSERVADA" | "ASIGNADA" | "EN_ATENCION" | "RESUELTA" | "CERRADA";
+export type Estado =
+  | "REGISTRADA"
+  | "EN_EVALUACION"
+  | "OBSERVADA"
+  | "ASIGNADA"
+  | "EN_ATENCION"
+  | "RESUELTA"
+  | "CERRADA";
 export type Prioridad = "BAJA" | "MEDIA" | "ALTA" | "URGENTE";
 export type TipoCierre = "CONFORME" | "DESISTIDA" | "SUPERVISOR";
 export type EtapaAdjunto = "REGISTRO" | "CORRECCION" | "ATENCION";
 export type Accion =
-  | "EVALUAR" | "OBSERVAR" | "ASIGNAR" | "REASIGNAR" | "INICIAR_ATENCION" | "RESOLVER"
-  | "CERRAR" | "CORREGIR" | "DESISTIR" | "REABRIR" | "PRIORIZAR";
+  | "EVALUAR"
+  | "OBSERVAR"
+  | "ASIGNAR"
+  | "REASIGNAR"
+  | "INICIAR_ATENCION"
+  | "RESOLVER"
+  | "CERRAR"
+  | "CORREGIR"
+  | "DESISTIR"
+  | "REABRIR"
+  | "PRIORIZAR";
 
-export interface Ref { id: number; nombre: string }
-export interface FacultadRef { id: number; codigo: string; nombre: string }
+export interface Ref {
+  id: number;
+  nombre: string;
+}
+export interface FacultadRef {
+  id: number;
+  codigo: string;
+  nombre: string;
+}
 
 export interface Usuario {
   id: number;
@@ -26,12 +49,29 @@ export interface Usuario {
 
 // La sesión real vive en una cookie HttpOnly que el navegador envía solo; aquí
 // solo se recuerdan los datos del usuario para pintar la interfaz.
-export interface Sesion { usuario: Usuario }
-export interface RespuestaLogin { token: string; usuario: Usuario }
+export interface Sesion {
+  usuario: Usuario;
+}
+export interface RespuestaLogin {
+  token: string;
+  usuario: Usuario;
+}
 
-export interface Facultad { id: number; codigo: string; nombre: string; activa: boolean; escuelas: Ref[] }
+export interface Facultad {
+  id: number;
+  codigo: string;
+  nombre: string;
+  activa: boolean;
+  escuelas: Ref[];
+}
 
-export interface Area { id: number; facultadId: number; nombre: string; ubicacion: string; activa: boolean }
+export interface Area {
+  id: number;
+  facultadId: number;
+  nombre: string;
+  ubicacion: string;
+  activa: boolean;
+}
 
 export interface TipoTramite {
   id: number;
@@ -59,7 +99,12 @@ export interface SolicitudResumen {
   responsable: Ref | null;
 }
 
-export interface Pagina<T> { items: T[]; total: number; page: number; size: number }
+export interface Pagina<T> {
+  items: T[];
+  total: number;
+  page: number;
+  size: number;
+}
 
 export interface SolicitudDetalle {
   codigo: string;
@@ -79,22 +124,80 @@ export interface SolicitudDetalle {
   cerradaAt: string | null;
   vencida: boolean;
   facultad: FacultadRef;
-  tipo: { id: number; nombre: string; requisitos: string[]; plazoDias: number; area: { id: number; nombre: string; ubicacion: string } };
-  estudiante: { id: number; nombre: string; email: string; codigoEstudiante: string | null; escuela: string | null };
+  tipo: {
+    id: number;
+    nombre: string;
+    requisitos: string[];
+    plazoDias: number;
+    area: { id: number; nombre: string; ubicacion: string };
+  };
+  estudiante: {
+    id: number;
+    nombre: string;
+    email: string;
+    codigoEstudiante: string | null;
+    escuela: string | null;
+  };
   responsable: { id: number; nombre: string; rol: Rol; area: string | null } | null;
-  adjuntos: { id: number; nombre: string; mime: string; tamano: number; etapa: EtapaAdjunto; subidoPor: string; createdAt: string }[];
-  observaciones: { id: number; texto: string; resuelta: boolean; autor: string; createdAt: string; resueltaAt: string | null }[];
-  historial: { id: number; accion: string; estadoDesde: Estado | null; estadoHasta: Estado | null; nota: string | null; autor: string; rol: Rol; createdAt: string }[];
-  mensajes: { id: number; texto: string; autorId: number; autor: string; rol: Rol; createdAt: string }[];
+  adjuntos: {
+    id: number;
+    nombre: string;
+    mime: string;
+    tamano: number;
+    etapa: EtapaAdjunto;
+    subidoPor: string;
+    createdAt: string;
+  }[];
+  observaciones: {
+    id: number;
+    texto: string;
+    resuelta: boolean;
+    autor: string;
+    createdAt: string;
+    resueltaAt: string | null;
+  }[];
+  historial: {
+    id: number;
+    accion: string;
+    estadoDesde: Estado | null;
+    estadoHasta: Estado | null;
+    nota: string | null;
+    autor: string;
+    rol: Rol;
+    createdAt: string;
+  }[];
+  mensajes: {
+    id: number;
+    texto: string;
+    autorId: number;
+    autor: string;
+    rol: Rol;
+    createdAt: string;
+  }[];
   acciones: Accion[];
   puedeAdjuntar: EtapaAdjunto | null;
   puedeEnviarMensaje: boolean;
-  responsablesDisponibles: { id: number; nombre: string; rol: Rol; area: string | null; delArea: boolean }[];
+  responsablesDisponibles: {
+    id: number;
+    nombre: string;
+    rol: Rol;
+    area: string | null;
+    delArea: boolean;
+  }[];
 }
 
-export interface Notificacion { id: number; texto: string; leida: boolean; createdAt: string; solicitudCodigo: string | null }
+export interface Notificacion {
+  id: number;
+  texto: string;
+  leida: boolean;
+  createdAt: string;
+  solicitudCodigo: string | null;
+}
 
-export interface Conteo { clave: string; total: number }
+export interface Conteo {
+  clave: string;
+  total: number;
+}
 export interface Dashboard {
   total: number;
   pendientes: number;
@@ -106,7 +209,13 @@ export interface Dashboard {
   porEstado: Conteo[];
   porPrioridad: Conteo[];
   porTipo: Conteo[];
-  porResponsable: { id: number; nombre: string; total: number; pendientes: number; resueltas: number }[];
+  porResponsable: {
+    id: number;
+    nombre: string;
+    total: number;
+    pendientes: number;
+    resueltas: number;
+  }[];
   porFacultad: Conteo[];
 }
 

@@ -103,7 +103,12 @@
   --sidebar-accent-foreground: oklch(0.98 0 0);
   --sidebar-border: oklch(0.32 0.06 255);
   --sidebar-ring: oklch(0.7 0.12 190);
-  --gradient-brand: linear-gradient(135deg, oklch(0.28 0.08 255), oklch(0.5 0.11 215) 60%, oklch(0.7 0.12 190));
+  --gradient-brand: linear-gradient(
+    135deg,
+    oklch(0.28 0.08 255),
+    oklch(0.5 0.11 215) 60%,
+    oklch(0.7 0.12 190)
+  );
   --shadow-card: 0 1px 2px oklch(0.24 0.05 255 / 6%), 0 8px 24px -12px oklch(0.24 0.05 255 / 18%);
 }
 
@@ -153,6 +158,14 @@
   }
 }
 
-@utility bg-brand { background-image: var(--gradient-brand); }
-@utility shadow-card { box-shadow: var(--shadow-card); }
-h1, h2, h3 { font-family: var(--font-display); }
+@utility bg-brand {
+  background-image: var(--gradient-brand);
+}
+@utility shadow-card {
+  box-shadow: var(--shadow-card);
+}
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+}
