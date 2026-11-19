@@ -8,11 +8,20 @@ const API_PORT = process.env.API_PORT ?? "4000";
 const WEB_PORT = process.env.PORT ?? "10000";
 
 const procesos = [
-  spawn("node", ["dist/index.js"], { cwd: "/app/api", stdio: "inherit", env: { ...process.env, PORT: API_PORT } }),
+  spawn("node", ["--import", "./dist/telemetria.js", "dist/index.js"], {
+    cwd: "/app/api",
+    stdio: "inherit",
+    env: { ...process.env, PORT: API_PORT },
+  }),
   spawn("node", [".output/server/index.mjs"], {
     cwd: "/app/web",
     stdio: "inherit",
-    env: { ...process.env, PORT: WEB_PORT, HOST: "0.0.0.0", API_INTERNAL_URL: `http://127.0.0.1:${API_PORT}` },
+    env: {
+      ...process.env,
+      PORT: WEB_PORT,
+      HOST: "0.0.0.0",
+      API_INTERNAL_URL: `http://127.0.0.1:${API_PORT}`,
+    },
   }),
 ];
 
