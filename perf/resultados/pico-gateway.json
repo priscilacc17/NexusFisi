@@ -1,0 +1,16 @@
+{
+  "escenario": "pico-gateway",
+  "fecha": "2026-11-19T20:42:51.990Z",
+  "peticiones": 3733418,
+  "peticiones_por_segundo": 67880.08511114074,
+  "latencia_ms": {
+    "promedio": 1.26566531602433,
+    "p90": 3.0880410000000027,
+    "p95": 4.356945199999999,
+    "max": 101.847493
+  },
+  "tasa_error": 0.9996946497820496,
+  "checks_ok": 0.9998473248910248,
+  "vus_max": 150,
+  "umbrales_ok": true
+}
