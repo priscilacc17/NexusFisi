@@ -153,7 +153,7 @@ interface Persona {
 const PERSONAS: Persona[] = [
   {
     email: "admin.central@unmsm.edu.pe",
-    nombre: "Administración Central NexusFisi",
+    nombre: "Administración Central NEXUS",
     rol: "ADMIN",
     fac: null,
   },

@@ -1,10 +1,10 @@
-# API REST de NexusFisi
+# API REST de NEXUS
 
 - **Base:** `/api/v1` (mismo origen que la interfaz, detrás del gateway).
 - **Documentación interactiva:** `/api/docs` (Swagger UI). La especificación OpenAPI 3.1 está en `/api/v1/openapi.json` y se genera desde el código: lo que valida la API es exactamente lo que documenta.
 - **Formato:** JSON. Los errores siguen RFC 9457 (`application/problem+json`).
 - **Autenticación:**
-  - **Interfaz web:** cookie `HttpOnly` que fija `POST /auth/login`, más la cabecera `X-NexusFisi: 1` en toda petición que modifique datos (protección CSRF).
+  - **Interfaz web:** cookie `HttpOnly` que fija `POST /auth/login`, más la cabecera `X-Nexus: 1` en toda petición que modifique datos (protección CSRF).
   - **Clientes de API (Swagger, curl):** `Authorization: Bearer <JWT>`, con el token que devuelve el mismo login.
 
 ## Recursos

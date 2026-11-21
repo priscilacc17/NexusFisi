@@ -14,7 +14,7 @@ import {
   varchar,
 } from "drizzle-orm/mysql-core";
 
-// Modelo de datos de NexusFisi.
+// Modelo de datos de NEXUS.
 //
 // Jerarquía organizativa: Universidad (UNMSM, única) → Facultad → Escuela / Área.
 // Todo lo operativo cuelga de una facultad: los tipos de trámite, el personal que

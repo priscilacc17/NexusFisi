@@ -10,7 +10,7 @@ export function nombrarSpan(metodo: string, ruta: string, requestId: string | un
   if (!span) return;
   span.updateName(`${metodo} ${ruta}`);
   span.setAttribute("http.route", ruta);
-  if (requestId) span.setAttribute("nexusfisi.request_id", requestId);
+  if (requestId) span.setAttribute("nexus.request_id", requestId);
 }
 
 /** Marca la traza como fallida con la excepción (se ve en rojo en Jaeger). */

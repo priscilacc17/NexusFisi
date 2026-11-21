@@ -15,7 +15,7 @@ export const Route = createFileRoute("/restablecer")({
     typeof s["token"] === "string" ? { token: s["token"] } : {},
   head: () => ({
     meta: [
-      { title: "Nueva contraseña · NexusFisi" },
+      { title: "Nueva contraseña · NEXUS" },
       { name: "description", content: "Crea una nueva contraseña." },
       { name: "referrer", content: "no-referrer" },
     ],

@@ -30,7 +30,7 @@ describe("sesión con cookie HttpOnly y protección CSRF", () => {
       body: JSON.stringify({ email: "estudiante.fisi@unmsm.edu.pe", password: "Demo1234" }),
     });
     const cookie = r.headers.get("set-cookie") ?? "";
-    expect(cookie).toMatch(/^nf_sesion=/);
+    expect(cookie).toMatch(/^nexus_sesion=/);
     expect(cookie).toMatch(/HttpOnly/i);
     expect(cookie).toMatch(/SameSite=Lax/i);
     expect(cookie).toMatch(/Path=\/api/);
@@ -52,7 +52,7 @@ describe("sesión con cookie HttpOnly y protección CSRF", () => {
     expect(sinCabecera.status).toBe(403);
     const conCabecera = await pedir("/notificaciones/leer-todas", {
       method: "POST",
-      headers: { cookie, "x-nexusfisi": "1" },
+      headers: { cookie, "x-nexus": "1" },
     });
     expect(conCabecera.status).toBe(200);
   });
@@ -60,7 +60,7 @@ describe("sesión con cookie HttpOnly y protección CSRF", () => {
   it("cerrar sesión borra la cookie", async () => {
     const r = await pedir("/auth/logout", { method: "POST" });
     expect(r.status).toBe(204);
-    expect(r.headers.get("set-cookie")).toMatch(/nf_sesion=;.*Max-Age=0/i);
+    expect(r.headers.get("set-cookie")).toMatch(/nexus_sesion=;.*Max-Age=0/i);
     expect(r.headers.get("set-cookie")).toMatch(/HttpOnly/);
     expect(r.headers.get("set-cookie")).toMatch(/SameSite=Lax/);
   });
@@ -93,7 +93,7 @@ describe("recuperación de contraseña por correo", () => {
     expect(existe.body).toEqual(noExiste.body);
     const correo = ctx.correos.enviados.at(-1)!;
     expect(correo.para).toBe("estudiante2.fisi@unmsm.edu.pe");
-    expect(correo.boton!.url).toMatch(/^https:\/\/nexusfisi\.test\/restablecer\?token=/);
+    expect(correo.boton!.url).toMatch(/^https:\/\/nexus\.test\/restablecer\?token=/);
   });
 
   it("el enlace cambia la contraseña, cierra las sesiones y no se puede reutilizar", async () => {
@@ -185,7 +185,7 @@ describe("avisos por correo del flujo", () => {
     );
     expect(correo?.para).toBe("estudiante.fisi@unmsm.edu.pe");
     expect(correo?.texto).toContain("Falta el DNI por ambas caras.");
-    expect(correo?.boton?.url).toBe(`https://nexusfisi.test/app/solicitudes/${body.codigo}`);
+    expect(correo?.boton?.url).toBe(`https://nexus.test/app/solicitudes/${body.codigo}`);
   });
 });
 

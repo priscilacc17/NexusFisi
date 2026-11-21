@@ -1,4 +1,4 @@
-// Tipos de la API REST de NexusFisi (ver /api/docs). Reflejan los esquemas OpenAPI.
+// Tipos de la API REST de NEXUS (ver /api/docs). Reflejan los esquemas OpenAPI.
 
 export type Rol = "ESTUDIANTE" | "TECNICO" | "SUPERVISOR" | "ADMIN";
 export type Estado =

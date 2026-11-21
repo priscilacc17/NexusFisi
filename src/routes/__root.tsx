@@ -79,14 +79,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "NexusFisi · Trámites académicos" },
+      { title: "NEXUS · Trámites académicos" },
       {
         name: "description",
         content:
-          "Plataforma de solicitudes y trámites académicos de la Facultad de Ingeniería de Sistemas e Informática (FISI) de la UNMSM.",
+          "NEXUS, Núcleo de Expediente Único Sanmarquino: solicitudes y trámites académicos de las facultades de la UNMSM.",
       },
-      { property: "og:title", content: "NexusFisi" },
-      { property: "og:description", content: "Trámites académicos de la FISI · UNMSM." },
+      { property: "og:title", content: "NEXUS" },
+      { property: "og:description", content: "Núcleo de Expediente Único Sanmarquino · UNMSM." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

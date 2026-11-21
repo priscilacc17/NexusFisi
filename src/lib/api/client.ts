@@ -36,8 +36,8 @@ function url(path: string, query?: Query) {
 }
 
 async function enviar(method: string, path: string, o: Opciones): Promise<Response> {
-  // x-nexusfisi: cabecera anti-CSRF que la API exige a toda petición con cookie que modifique datos.
-  const headers: Record<string, string> = { accept: "application/json", "x-nexusfisi": "1" };
+  // x-nexus: cabecera anti-CSRF que la API exige a toda petición con cookie que modifique datos.
+  const headers: Record<string, string> = { accept: "application/json", "x-nexus": "1" };
   const conSesion = o.auth !== false && getSesion() !== null;
   if (o.json !== undefined) headers["content-type"] = "application/json";
   let res: Response;
@@ -52,7 +52,7 @@ async function enviar(method: string, path: string, o: Opciones): Promise<Respon
     throw new ApiError(
       0,
       "SIN_CONEXION",
-      "No se pudo conectar con el servidor de NexusFisi. Revisa tu conexión e inténtalo de nuevo.",
+      "No se pudo conectar con el servidor de NEXUS. Revisa tu conexión e inténtalo de nuevo.",
     );
   }
   if (res.ok) return res;

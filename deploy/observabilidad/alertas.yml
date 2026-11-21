@@ -1,19 +1,19 @@
 # Reglas de alerta. Se ven en Prometheus (Alerts) y en el tablero de Grafana.
 groups:
-  - name: nexusfisi
+  - name: nexus
     rules:
       - alert: ApiCaida
-        expr: up{job="nexusfisi-api"} == 0
+        expr: up{job="nexus-api"} == 0
         for: 1m
         labels: { severidad: critica }
         annotations:
-          resumen: "La API de NexusFisi no responde"
+          resumen: "La API de NEXUS no responde"
           descripcion: "Prometheus no puede leer las métricas desde hace más de 1 minuto. Revisar 'docker compose logs api'."
 
       - alert: TasaDeErroresAlta
         expr: |
-          sum(rate(nexusfisi_http_peticiones_total{estado=~"5.."}[5m]))
-            / clamp_min(sum(rate(nexusfisi_http_peticiones_total[5m])), 0.001) > 0.05
+          sum(rate(nexus_http_peticiones_total{estado=~"5.."}[5m]))
+            / clamp_min(sum(rate(nexus_http_peticiones_total[5m])), 0.001) > 0.05
         for: 5m
         labels: { severidad: alta }
         annotations:
@@ -22,7 +22,7 @@ groups:
 
       - alert: LatenciaAlta
         expr: |
-          histogram_quantile(0.95, sum by (le) (rate(nexusfisi_http_duracion_segundos_bucket[5m]))) > 1
+          histogram_quantile(0.95, sum by (le) (rate(nexus_http_duracion_segundos_bucket[5m]))) > 1
         for: 10m
         labels: { severidad: media }
         annotations:
@@ -30,7 +30,7 @@ groups:
           descripcion: "Revisar en Jaeger qué consulta a MySQL o qué ruta concentra el tiempo."
 
       - alert: SolicitudesVencidas
-        expr: nexusfisi_solicitudes_vencidas > 10
+        expr: nexus_solicitudes_vencidas > 10
         for: 30m
         labels: { severidad: negocio }
         annotations:
@@ -38,7 +38,7 @@ groups:
           descripcion: "Alerta de negocio para la supervisión: revisar la bandeja ordenada por vencimiento."
 
       - alert: MemoriaAlta
-        expr: nexusfisi_process_resident_memory_bytes > 400 * 1024 * 1024
+        expr: nexus_process_resident_memory_bytes > 400 * 1024 * 1024
         for: 10m
         labels: { severidad: media }
         annotations:

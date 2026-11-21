@@ -15,8 +15,8 @@ import { useSesion } from "@/lib/session";
 export const Route = createFileRoute("/registro")({
   head: () => ({
     meta: [
-      { title: "Crear cuenta · NexusFisi" },
-      { name: "description", content: "Registro de estudiantes de la UNMSM en NexusFisi." },
+      { title: "Crear cuenta · NEXUS" },
+      { name: "description", content: "Registro de estudiantes de la UNMSM en NEXUS." },
     ],
   }),
   component: Registro,

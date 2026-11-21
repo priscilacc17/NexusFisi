@@ -1,4 +1,4 @@
-# Blueprint de Render para NexusFisi (Docker).
+# Blueprint de Render para NEXUS (Docker).
 # Render → New → Blueprint → elige este repositorio. Te pedirá los valores marcados sync:false.
 #
 # Un solo servicio web con la imagen combinada (Dockerfile.render): la interfaz
@@ -37,7 +37,7 @@ services:
         value: brevo
       - key: MAIL_API_KEY # Brevo → SMTP & API → API Keys
         sync: false
-      - key: MAIL_FROM # NexusFisi <correo verificado como remitente en Brevo>
+      - key: MAIL_FROM # NEXUS <correo verificado como remitente en Brevo>
         sync: false
       - key: MAIL_REDIRECT_TO # en una demo: tu casilla (las cuentas demo no son buzones reales). Vacío en producción real.
         sync: false

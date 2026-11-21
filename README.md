@@ -1,9 +1,11 @@
-# NexusFisi
+# NEXUS — Núcleo de EXpediente Único Sanmarquino
 
-Plataforma web para **registrar, gestionar, priorizar, atender y monitorear los trámites académicos de las facultades de la Universidad Nacional Mayor de San Marcos (UNMSM)**.
+**NEXUS** es la plataforma web para **registrar, gestionar, priorizar, atender y monitorear los trámites académicos de las facultades de la Universidad Nacional Mayor de San Marcos (UNMSM)**.
 
 Cada facultad tiene su propio catálogo de trámites, sus áreas responsables, su personal y su numeración de expedientes (`FISI-2026-00001`, `FM-2026-00001`…). El personal de una facultad nunca ve ni modifica las solicitudes de otra. Un administrador central gestiona las facultades y ve los indicadores de toda la universidad.
 
+> **El nombre:** NEXUS es la sigla de **N**úcleo de **EX**pediente **Ú**nico **S**anmarquino: un solo expediente digital por trámite, para todas las facultades. El proyecto empezó como «NexusFisi», centrado en la FISI; el repositorio y la URL de la demostración conservan ese nombre.
+>
 > Proyecto del curso _Taller de Construcción de Software Web_ — propuesta «TrámiteUni» adaptada a la UNMSM. El enunciado está en [`docs/presentacion/`](docs/presentacion/).
 >
 > La interfaz se generó inicialmente con Lovable y el repositorio sigue conectado a su editor, pero **la aplicación no depende de Lovable para funcionar ni para desplegarse**: se construye como imágenes Docker y corre en Render o en cualquier servidor con Docker.

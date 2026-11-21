@@ -26,7 +26,7 @@ import { useUsuario } from "@/lib/session";
 export const Route = createFileRoute("/app/solicitudes/$codigo")({
   head: ({ params }) => ({
     meta: [
-      { title: `${params.codigo} · NexusFisi` },
+      { title: `${params.codigo} · NEXUS` },
       { name: "description", content: "Detalle y seguimiento de la solicitud." },
     ],
   }),

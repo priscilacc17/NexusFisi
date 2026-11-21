@@ -12,13 +12,13 @@ import { useSesion } from "@/lib/session";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "NexusFisi · Trámites académicos UNMSM" },
+      { title: "NEXUS · Trámites académicos UNMSM" },
       {
         name: "description",
         content:
           "Registra y da seguimiento a tus solicitudes y trámites académicos en las facultades de la Universidad Nacional Mayor de San Marcos.",
       },
-      { property: "og:title", content: "NexusFisi · Trámites académicos" },
+      { property: "og:title", content: "NEXUS · Trámites académicos" },
       {
         property: "og:description",
         content: "Plataforma de solicitudes y trámites académicos de la UNMSM.",

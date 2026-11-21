@@ -73,7 +73,7 @@ export function createApp(deps: Deps) {
     cors({
       origin: deps.env.CORS_ORIGINS,
       credentials: true,
-      allowHeaders: ["Authorization", "Content-Type", "X-Request-Id", "X-NexusFisi"],
+      allowHeaders: ["Authorization", "Content-Type", "X-Request-Id", "X-Nexus"],
       exposeHeaders: ["X-Request-Id"],
       maxAge: 600,
     }),
@@ -145,7 +145,7 @@ export function createApp(deps: Deps) {
   app.doc31(`${API_PREFIX}/openapi.json`, {
     openapi: "3.1.0",
     info: {
-      title: "NexusFisi API",
+      title: "NEXUS API",
       version: "1.0.0",
       description:
         "API REST para registrar, gestionar y dar seguimiento a los trámites académicos de las facultades de la UNMSM.",

@@ -1,11 +1,11 @@
-# Seguridad de NexusFisi
+# Seguridad de NEXUS
 
 ## Autenticación y autorización
 
 - **Contraseñas:** bcrypt (costo 11). Política de 8 a 72 bytes, con letras y números.
 - **JWT HS256** firmado con `JWT_SECRET` (mínimo 32 caracteres, validado al arrancar; en producción se rechaza el valor de ejemplo). Incluye emisor, audiencia y vencimiento (8 h por defecto).
 - **La sesión web viaja en una cookie `HttpOnly`, `Secure` y `SameSite=Lax`, limitada a `/api`.** JavaScript no puede leerla, así que un XSS no puede robar la sesión. En el navegador solo se guarda el perfil para pintar la interfaz, nunca el token. Los clientes de API (Swagger, curl) pueden seguir usando `Authorization: Bearer`.
-- **CSRF:** toda petición autenticada por cookie que modifique datos debe traer la cabecera `X-NexusFisi: 1`. Un sitio ajeno no puede agregarla sin pasar por CORS, que solo admite el propio dominio. Además, `SameSite=Lax` impide que la cookie viaje en envíos de formularios desde otros sitios.
+- **CSRF:** toda petición autenticada por cookie que modifique datos debe traer la cabecera `X-Nexus: 1`. Un sitio ajeno no puede agregarla sin pasar por CORS, que solo admite el propio dominio. Además, `SameSite=Lax` impide que la cookie viaje en envíos de formularios desde otros sitios.
 - **Recuperación de contraseña por correo:**
   - El enlace vale 30 minutos y un solo uso; pedir uno nuevo anula los anteriores.
   - En la base se guarda el _hash_ SHA-256 del token, no el token: quien lea la base no puede usar los enlaces.
@@ -25,7 +25,7 @@
 
 ## OWASP Top 10 (2021)
 
-| Riesgo                             | Medidas en NexusFisi                                                                                                                                                                                                                                                                                                                                           |
+| Riesgo                             | Medidas en NEXUS                                                                                                                                                                                                                                                                                                                                               |
 | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | A01 Control de acceso roto         | Alcance por rol y facultad en todos los servicios; administradores sin acciones de flujo; pruebas de aislamiento entre facultades, estudiantes y técnicos.                                                                                                                                                                                                     |
 | A02 Fallas criptográficas          | bcrypt; JWT con secreto fuerte desde el entorno; HTTPS en el borde (Cloudflare o certbot); la base sin puerto público.                                                                                                                                                                                                                                         |

@@ -9,11 +9,11 @@ export const Route = createFileRoute("/app")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Panel · NexusFisi" },
+      { title: "Panel · NEXUS" },
       { name: "description", content: "Panel de trámites académicos de la UNMSM." },
     ],
   }),
-  pendingComponent: () => <LoadingState text="Cargando NexusFisi…" />,
+  pendingComponent: () => <LoadingState text="Cargando NEXUS…" />,
   component: AppLayout,
 });
 

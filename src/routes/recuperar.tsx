@@ -12,7 +12,7 @@ import { useRecuperar } from "@/lib/api/queries";
 export const Route = createFileRoute("/recuperar")({
   head: () => ({
     meta: [
-      { title: "Recuperar contraseña · NexusFisi" },
+      { title: "Recuperar contraseña · NEXUS" },
       { name: "description", content: "Recibe un enlace para crear una nueva contraseña." },
     ],
   }),

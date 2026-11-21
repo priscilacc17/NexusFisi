@@ -1,6 +1,6 @@
 # Informe de pruebas — Fase IV
 
-**Sistema:** NexusFisi v1.0.0 · **Fecha de ejecución:** 19 de noviembre de 2026 · **Ambiente:** stack local de producción con `docker compose` (gateway nginx + interfaz + API + MySQL 8.4), salvo que se indique otra cosa.
+**Sistema:** NEXUS v1.0.0 · **Fecha de ejecución:** 19 de noviembre de 2026 · **Ambiente:** stack local de producción con `docker compose` (gateway nginx + interfaz + API + MySQL 8.4), salvo que se indique otra cosa.
 
 Este informe reúne todas las pruebas exigidas por la Fase IV: funcionales, de aceptación, de usuario, de seguridad (SAST y DAST), de carga y de estrés. Para cada una se indica la herramienta, qué se probó, el resultado y qué se corrigió a partir de ella.
 
@@ -220,4 +220,4 @@ Resultados en JSON: [`perf/resultados/`](../perf/resultados/).
 
 ## 9. Conclusión
 
-Todas las pruebas funcionales, de aceptación y de usuario pasan. Los análisis de seguridad no encontraron vulnerabilidades explotables en la aplicación; los hallazgos de configuración se corrigieron y se dejaron pruebas automáticas para que no vuelvan. El sistema atiende la carga esperada con amplio margen (p95 de 10 ms con 50 usuarios), se degrada sin errores bajo estrés extremo y el gateway lo protege del abuso. **NexusFisi queda apto para su liberación como v1.0.0.**
+Todas las pruebas funcionales, de aceptación y de usuario pasan. Los análisis de seguridad no encontraron vulnerabilidades explotables en la aplicación; los hallazgos de configuración se corrigieron y se dejaron pruebas automáticas para que no vuelvan. El sistema atiende la carga esperada con amplio margen (p95 de 10 ms con 50 usuarios), se degrada sin errores bajo estrés extremo y el gateway lo protege del abuso. **NEXUS queda apto para su liberación como v1.0.0.**

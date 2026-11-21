@@ -29,9 +29,9 @@ export async function prepararApp(extra: Record<string, string> = {}): Promise<C
     NODE_ENV: "test",
     DATABASE_URL: URL_PRUEBAS,
     JWT_SECRET: "clave-de-pruebas-".padEnd(48, "x"),
-    UPLOAD_DIR: await mkdtemp(path.join(os.tmpdir(), "nexusfisi-test-")),
+    UPLOAD_DIR: await mkdtemp(path.join(os.tmpdir(), "nexus-test-")),
     AUTH_RATE_LIMIT: "1000",
-    PUBLIC_URL: "https://nexusfisi.test",
+    PUBLIC_URL: "https://nexus.test",
     ...extra,
   });
   const database = createDatabase(env.DATABASE_URL);

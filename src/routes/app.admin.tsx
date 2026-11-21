@@ -12,7 +12,7 @@ import { useUsuario } from "@/lib/session";
 export const Route = createFileRoute("/app/admin")({
   head: () => ({
     meta: [
-      { title: "Administración · NexusFisi" },
+      { title: "Administración · NEXUS" },
       { name: "description", content: "Usuarios, roles, trámites, áreas y facultades." },
     ],
   }),

@@ -1,6 +1,6 @@
-# Manual técnico — NexusFisi v1.0.0
+# Manual técnico — NEXUS v1.0.0
 
-Guía para quien **mantenga, despliegue u opere** NexusFisi. Reúne lo esencial y enlaza al detalle.
+Guía para quien **mantenga, despliegue u opere** NEXUS. Reúne lo esencial y enlaza al detalle.
 
 ## 1. Visión general
 
@@ -128,6 +128,6 @@ Medido con k6 ([informe](informe-pruebas.md#7-pruebas-de-carga-y-de-estrés)): c
 | `db: "error"` en `/health`                                  | MySQL caído o inaccesible; en Aiven revisar `DATABASE_SSL_CA` y que la URL tenga el puerto correcto.  |
 | No salen correos en Render                                  | Render gratis bloquea SMTP 25/465/587: usar `MAIL_PROVIDER=brevo` o SMTP de Brevo por el puerto 2525. |
 | Desde la red de la universidad u oficina no conecta a Aiven | Puertos no estándar bloqueados en esa red; desde Render funciona.                                     |
-| 403 en un POST desde un cliente propio                      | Falta la cabecera anti-CSRF `x-nexusfisi: 1` (con cookie) o usar `Authorization: Bearer`.             |
+| 403 en un POST desde un cliente propio                      | Falta la cabecera anti-CSRF `x-nexus: 1` (con cookie) o usar `Authorization: Bearer`.                 |
 | 429                                                         | Límite de nginx (20 req/s por IP) o de intentos de login (`AUTH_RATE_LIMIT`).                         |
 | Lint con miles de errores «Delete ␍» en Windows             | No debería pasar: `.prettierrc` usa `endOfLine: auto`. Si aparece, revisar `core.autocrlf`.           |

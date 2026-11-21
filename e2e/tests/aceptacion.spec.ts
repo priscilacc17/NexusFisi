@@ -152,7 +152,7 @@ test("Seguridad · la sesión viaja en una cookie HttpOnly, no en el navegador",
   context,
 }) => {
   await ingresar(page, "supervisor.fisi@unmsm.edu.pe");
-  const cookie = (await context.cookies()).find((c) => c.name === "nf_sesion");
+  const cookie = (await context.cookies()).find((c) => c.name === "nexus_sesion");
   expect(cookie?.httpOnly).toBe(true);
   expect(cookie?.sameSite).toBe("Lax");
   const almacenado = await page.evaluate(() => JSON.stringify(localStorage));

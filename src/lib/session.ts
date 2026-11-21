@@ -5,7 +5,7 @@
 import { useSyncExternalStore } from "react";
 import type { Sesion, Usuario } from "./api/types";
 
-const KEY = "nexusfisi:sesion";
+const KEY = "nexus:sesion";
 const listeners = new Set<() => void>();
 let cache: Sesion | null | undefined;
 
