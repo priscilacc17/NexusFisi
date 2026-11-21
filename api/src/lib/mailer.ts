@@ -30,9 +30,9 @@ export function html(c: Correo): string {
     ? `<p style="margin:20px 0"><a href="${escapar(c.boton.url)}" style="background:#16294a;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600">${escapar(c.boton.texto)}</a></p>`
     : "";
   return `<div style="font-family:Arial,sans-serif;font-size:15px;color:#1e293b;max-width:560px;margin:auto">
-<p style="font-size:20px;font-weight:700;color:#16294a;margin:0 0 16px">NexusFisi · Trámites académicos UNMSM</p>
+<p style="font-size:20px;font-weight:700;color:#16294a;margin:0 0 16px">NEXUS · Núcleo de Expediente Único Sanmarquino</p>
 ${parrafos}${boton}
-<p style="font-size:12px;color:#64748b;margin-top:24px">Mensaje automático de NexusFisi. No respondas a este correo.</p></div>`;
+<p style="font-size:12px;color:#64748b;margin-top:24px">Mensaje automático de NEXUS. No respondas a este correo.</p></div>`;
 }
 
 // "Nombre <correo@dominio>" → partes.

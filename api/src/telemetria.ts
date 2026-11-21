@@ -19,7 +19,7 @@ if (endpoint && process.env["OTEL_SDK_DISABLED"] !== "true") {
 
   const sdk = new NodeSDK({
     resource: resourceFromAttributes({
-      "service.name": process.env["OTEL_SERVICE_NAME"] ?? "nexusfisi-api",
+      "service.name": process.env["OTEL_SERVICE_NAME"] ?? "nexus-api",
       "service.version": process.env["npm_package_version"] ?? "1.0.0",
       "deployment.environment": process.env["NODE_ENV"] ?? "development",
     }),

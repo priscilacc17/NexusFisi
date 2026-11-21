@@ -9,6 +9,6 @@ export function createLogger(env: Pick<Env, "LOG_LEVEL" | "NODE_ENV">) {
       paths: ["req.headers.authorization", "*.password", "*.passwordHash", "*.token"],
       censor: "[oculto]",
     },
-    base: { service: "nexusfisi-api" },
+    base: { service: "nexus-api" },
   });
 }

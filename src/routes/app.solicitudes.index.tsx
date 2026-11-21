@@ -14,7 +14,7 @@ import type { Estado } from "@/lib/api/types";
 export const Route = createFileRoute("/app/solicitudes/")({
   head: () => ({
     meta: [
-      { title: "Mis solicitudes · NexusFisi" },
+      { title: "Mis solicitudes · NEXUS" },
       { name: "description", content: "Consulta el estado de tus solicitudes." },
     ],
   }),

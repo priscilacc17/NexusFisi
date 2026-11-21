@@ -8,7 +8,7 @@ import { useUsuario } from "@/lib/session";
 export const Route = createFileRoute("/app/tramites")({
   head: () => ({
     meta: [
-      { title: "Catálogo de trámites · NexusFisi" },
+      { title: "Catálogo de trámites · NEXUS" },
       { name: "description", content: "Trámites académicos disponibles y sus requisitos." },
     ],
   }),
@@ -31,7 +31,7 @@ function Catalog() {
       ) : tipos.data.length === 0 ? (
         <EmptyState
           title="No hay trámites disponibles"
-          text="Tu facultad todavía no publicó trámites en NexusFisi."
+          text="Tu facultad todavía no publicó trámites en NEXUS."
         />
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

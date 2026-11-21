@@ -190,7 +190,7 @@ export async function solicitarRecuperacion(deps: Deps, emailIn: string) {
   enviarSinEsperar(deps.mailer, deps.logger, [
     {
       para: u.email,
-      asunto: "Restablece tu contraseña de NexusFisi",
+      asunto: "Restablece tu contraseña de NEXUS",
       texto: `Hola ${u.nombre}.\nRecibimos una solicitud para restablecer tu contraseña. El enlace vence en ${VIGENCIA_ENLACE_MIN} minutos y solo se puede usar una vez.\nSi no fuiste tú, ignora este correo: tu contraseña no cambiará.`,
       boton: { texto: "Crear una nueva contraseña", url: url.toString() },
     },

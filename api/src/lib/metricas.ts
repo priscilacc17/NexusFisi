@@ -14,24 +14,24 @@ import { nombrarSpan } from "./traza.js";
 // real: con un código por expediente, la cantidad de series crecería sin límite.
 export function crearMetricas(db: Db) {
   const registro = new client.Registry();
-  registro.setDefaultLabels({ servicio: "nexusfisi-api" });
-  client.collectDefaultMetrics({ register: registro, prefix: "nexusfisi_" });
+  registro.setDefaultLabels({ servicio: "nexus-api" });
+  client.collectDefaultMetrics({ register: registro, prefix: "nexus_" });
 
   const peticiones = new client.Counter({
-    name: "nexusfisi_http_peticiones_total",
+    name: "nexus_http_peticiones_total",
     help: "Peticiones HTTP atendidas",
     labelNames: ["metodo", "ruta", "estado"] as const,
     registers: [registro],
   });
   const duracion = new client.Histogram({
-    name: "nexusfisi_http_duracion_segundos",
+    name: "nexus_http_duracion_segundos",
     help: "Duración de las peticiones HTTP",
     labelNames: ["metodo", "ruta", "estado"] as const,
     buckets: [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5],
     registers: [registro],
   });
   new client.Gauge({
-    name: "nexusfisi_solicitudes",
+    name: "nexus_solicitudes",
     help: "Solicitudes por estado",
     labelNames: ["estado"] as const,
     registers: [registro],
@@ -45,7 +45,7 @@ export function crearMetricas(db: Db) {
     },
   });
   new client.Gauge({
-    name: "nexusfisi_solicitudes_vencidas",
+    name: "nexus_solicitudes_vencidas",
     help: "Solicitudes pendientes que superaron su plazo",
     registers: [registro],
     async collect() {

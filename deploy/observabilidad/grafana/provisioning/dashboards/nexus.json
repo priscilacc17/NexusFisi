@@ -1,6 +1,6 @@
 {
-  "title": "NexusFisi · Operación",
-  "uid": "nexusfisi",
+  "title": "NEXUS · Operación",
+  "uid": "nexus",
   "schemaVersion": 39,
   "refresh": "15s",
   "time": {
@@ -25,7 +25,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "up{job=\"nexusfisi-api\"}",
+          "expr": "up{job=\"nexus-api\"}",
           "legendFormat": ""
         }
       ],
@@ -66,7 +66,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(rate(nexusfisi_http_peticiones_total[1m]))",
+          "expr": "sum(rate(nexus_http_peticiones_total[1m]))",
           "legendFormat": ""
         }
       ],
@@ -94,7 +94,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "100 * (sum(rate(nexusfisi_http_peticiones_total{estado=~\"5..\"}[5m])) or vector(0)) / clamp_min(sum(rate(nexusfisi_http_peticiones_total[5m])), 0.001)",
+          "expr": "100 * (sum(rate(nexus_http_peticiones_total{estado=~\"5..\"}[5m])) or vector(0)) / clamp_min(sum(rate(nexus_http_peticiones_total[5m])), 0.001)",
           "legendFormat": ""
         }
       ],
@@ -122,7 +122,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "histogram_quantile(0.95, sum by (le) (rate(nexusfisi_http_duracion_segundos_bucket[5m])))",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(nexus_http_duracion_segundos_bucket[5m])))",
           "legendFormat": ""
         }
       ],
@@ -150,7 +150,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "nexusfisi_solicitudes_vencidas",
+          "expr": "nexus_solicitudes_vencidas",
           "legendFormat": ""
         }
       ]
@@ -172,7 +172,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum by (ruta) (rate(nexusfisi_http_peticiones_total[1m]))",
+          "expr": "sum by (ruta) (rate(nexus_http_peticiones_total[1m]))",
           "legendFormat": "{{ruta}}"
         }
       ],
@@ -199,17 +199,17 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "histogram_quantile(0.5, sum by (le) (rate(nexusfisi_http_duracion_segundos_bucket[5m])))",
+          "expr": "histogram_quantile(0.5, sum by (le) (rate(nexus_http_duracion_segundos_bucket[5m])))",
           "legendFormat": "p50"
         },
         {
           "refId": "B",
-          "expr": "histogram_quantile(0.95, sum by (le) (rate(nexusfisi_http_duracion_segundos_bucket[5m])))",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(nexus_http_duracion_segundos_bucket[5m])))",
           "legendFormat": "p95"
         },
         {
           "refId": "C",
-          "expr": "histogram_quantile(0.99, sum by (le) (rate(nexusfisi_http_duracion_segundos_bucket[5m])))",
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(nexus_http_duracion_segundos_bucket[5m])))",
           "legendFormat": "p99"
         }
       ],
@@ -236,7 +236,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum by (estado) (rate(nexusfisi_http_peticiones_total[1m]))",
+          "expr": "sum by (estado) (rate(nexus_http_peticiones_total[1m]))",
           "legendFormat": "{{estado}}"
         }
       ],
@@ -263,7 +263,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "nexusfisi_solicitudes",
+          "expr": "nexus_solicitudes",
           "legendFormat": "{{estado}}"
         }
       ],
@@ -289,7 +289,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "nexusfisi_process_resident_memory_bytes",
+          "expr": "nexus_process_resident_memory_bytes",
           "legendFormat": "RSS"
         }
       ],
@@ -316,7 +316,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "nexusfisi_nodejs_eventloop_lag_p99_seconds",
+          "expr": "nexus_nodejs_eventloop_lag_p99_seconds",
           "legendFormat": "p99"
         }
       ],

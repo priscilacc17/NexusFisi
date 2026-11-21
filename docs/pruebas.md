@@ -1,4 +1,4 @@
-# Pruebas de NexusFisi
+# Pruebas de NEXUS
 
 | Nivel                                       | Herramienta                | Dónde                   | Cantidad     |
 | ------------------------------------------- | -------------------------- | ----------------------- | ------------ |

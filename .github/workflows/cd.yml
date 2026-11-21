@@ -71,8 +71,8 @@ jobs:
           context: api
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/nexusfisi-api:${{ steps.tag.outputs.tag }}
-            ghcr.io/${{ github.repository_owner }}/nexusfisi-api:latest
+            ghcr.io/${{ github.repository_owner }}/nexus-api:${{ steps.tag.outputs.tag }}
+            ghcr.io/${{ github.repository_owner }}/nexus-api:latest
           cache-from: type=gha,scope=api
           cache-to: type=gha,mode=max,scope=api
       - name: Frontend
@@ -81,8 +81,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/nexusfisi-web:${{ steps.tag.outputs.tag }}
-            ghcr.io/${{ github.repository_owner }}/nexusfisi-web:latest
+            ghcr.io/${{ github.repository_owner }}/nexus-web:${{ steps.tag.outputs.tag }}
+            ghcr.io/${{ github.repository_owner }}/nexus-web:latest
           cache-from: type=gha,scope=web
           cache-to: type=gha,mode=max,scope=web
 
@@ -107,7 +107,7 @@ jobs:
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
             set -e
-            cd "${{ secrets.VM_PATH || '/opt/nexusfisi' }}"
+            cd "${{ secrets.VM_PATH || '/opt/nexus' }}"
             sed -i "s/^TAG=.*/TAG=${{ needs.imagenes.outputs.tag }}/" .env
             docker compose pull api web
             docker compose up -d --remove-orphans

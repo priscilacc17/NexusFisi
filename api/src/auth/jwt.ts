@@ -1,8 +1,8 @@
 import { SignJWT, jwtVerify } from "jose";
 import type { Rol } from "../db/schema.js";
 
-const ISSUER = "nexusfisi-api";
-const AUDIENCE = "nexusfisi-web";
+const ISSUER = "nexus-api";
+const AUDIENCE = "nexus-web";
 
 export interface Claims {
   sub: string;

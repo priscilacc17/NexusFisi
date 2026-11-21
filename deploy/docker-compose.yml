@@ -1,4 +1,4 @@
-# Despliegue de NexusFisi en una VM: MySQL + API + frontend + gateway nginx.
+# Despliegue de NEXUS en una VM: MySQL + API + frontend + gateway nginx.
 #   cp .env.example .env   (y completa los secretos)
 #   docker compose up -d --build        # construye localmente
 #   docker compose pull && docker compose up -d   # usa las imágenes publicadas por CI/CD
@@ -24,7 +24,7 @@ services:
     # Sin puertos publicados: solo la API llega a la base, por la red interna.
 
   api:
-    image: ${REGISTRY:-ghcr.io/priscilacc17}/nexusfisi-api:${TAG:-latest}
+    image: ${REGISTRY:-ghcr.io/priscilacc17}/nexus-api:${TAG:-latest}
     build: ../api
     restart: unless-stopped
     depends_on:
@@ -53,12 +53,12 @@ services:
       METRICS_TOKEN: ${METRICS_TOKEN:-}
       # Trazas: con el perfil "observabilidad" apunta a Jaeger (http://jaeger:4318).
       OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
-      OTEL_SERVICE_NAME: nexusfisi-api
+      OTEL_SERVICE_NAME: nexus-api
     volumes:
       - uploads:/data/uploads
 
   web:
-    image: ${REGISTRY:-ghcr.io/priscilacc17}/nexusfisi-web:${TAG:-latest}
+    image: ${REGISTRY:-ghcr.io/priscilacc17}/nexus-web:${TAG:-latest}
     build:
       context: ..
       args:

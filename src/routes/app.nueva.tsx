@@ -28,7 +28,7 @@ export const Route = createFileRoute("/app/nueva")({
   },
   head: () => ({
     meta: [
-      { title: "Nueva solicitud · NexusFisi" },
+      { title: "Nueva solicitud · NEXUS" },
       { name: "description", content: "Registra una nueva solicitud académica." },
     ],
   }),

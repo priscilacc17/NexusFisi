@@ -24,7 +24,7 @@ import { useUsuario } from "@/lib/session";
 export const Route = createFileRoute("/app/bandeja")({
   head: () => ({
     meta: [
-      { title: "Bandeja de solicitudes · NexusFisi" },
+      { title: "Bandeja de solicitudes · NEXUS" },
       { name: "description", content: "Bandeja de trabajo del personal." },
     ],
   }),

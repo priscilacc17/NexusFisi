@@ -1,6 +1,6 @@
-# Manual de usuario — NexusFisi
+# Manual de usuario — NEXUS
 
-NexusFisi es la plataforma de **trámites académicos de la UNMSM**: el estudiante presenta su solicitud en línea, la sigue paso a paso y recibe la respuesta sin hacer colas. El personal de cada facultad las evalúa, asigna y atiende desde una bandeja.
+**NEXUS** (Núcleo de EXpediente Único Sanmarquino) es la plataforma de **trámites académicos de la UNMSM**: el estudiante presenta su solicitud en línea, la sigue paso a paso y recibe la respuesta sin hacer colas. El personal de cada facultad las evalúa, asigna y atiende desde una bandeja.
 
 Algunos trámites siguen necesitando un paso presencial (por ejemplo, recoger un documento firmado). En ese caso la solicitud indica **qué oficina atiende y dónde está** (pabellón, piso y ventanilla).
 

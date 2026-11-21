@@ -49,11 +49,13 @@ export function AuthLayout({ children }: { children: ReactNode }) {
         <div className="w-full max-w-sm">
           <div className="mb-8 flex items-center gap-3">
             <div className="grid h-11 w-11 place-items-center rounded-xl bg-brand font-bold text-primary-foreground">
-              NF
+              NX
             </div>
             <div>
-              <h1 className="text-2xl font-bold">NexusFisi</h1>
-              <p className="text-sm text-muted-foreground">Trámites académicos · UNMSM</p>
+              <h1 className="text-2xl font-bold">NEXUS</h1>
+              <p className="text-sm text-muted-foreground">
+                Núcleo de Expediente Único Sanmarquino
+              </p>
             </div>
           </div>
           {children}

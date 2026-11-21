@@ -36,7 +36,7 @@ describe("cliente de la API", () => {
     const [url, init] = fetchMock.mock.calls[0]!;
     expect(url).toBe("/api/v1/solicitudes?estado=OBSERVADA&page=2");
     expect(init.headers.authorization).toBeUndefined();
-    expect(init.headers["x-nexusfisi"]).toBe("1");
+    expect(init.headers["x-nexus"]).toBe("1");
     expect(init.credentials).toBe("same-origin");
     expect(JSON.stringify(localStorage)).not.toMatch(/token/i);
   });

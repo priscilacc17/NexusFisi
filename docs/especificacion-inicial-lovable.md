@@ -1,6 +1,6 @@
-# NexusFisi Hub
+# NEXUS Hub
 
-Desarrolla una aplicación web responsive llamada **NexusFisi**, una plataforma para gestionar y dar seguimiento a solicitudes y trámites académicos de la Facultad de Ingeniería de Sistemas e Informática (FISI) de la Universidad Nacional Mayor de San Marcos (UNMSM).
+Desarrolla una aplicación web responsive llamada **NEXUS**, una plataforma para gestionar y dar seguimiento a solicitudes y trámites académicos de la Facultad de Ingeniería de Sistemas e Informática (FISI) de la Universidad Nacional Mayor de San Marcos (UNMSM).
 
 ### 1. Objetivo
 

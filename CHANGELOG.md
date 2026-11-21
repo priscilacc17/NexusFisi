@@ -16,6 +16,10 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/); v
 - Lint y formato (ESLint + Prettier) obligatorios en el CI.
 - Documentación: informe de pruebas, observabilidad, revisión final, manual de usuario y manual técnico.
 
+### Cambiado
+
+- **Nuevo nombre: NEXUS — Núcleo de EXpediente Único Sanmarquino** (antes NexusFisi), acorde al alcance de toda la universidad. Cambian la interfaz, los correos, la documentación y los identificadores técnicos: cabecera anti-CSRF `x-nexus`, cookie `nexus_sesion`, métricas `nexus_*`, servicio `nexus-api` e imágenes `nexus-api`/`nexus-web`. Al desplegar, las sesiones abiertas se cierran una vez. Se conservan los nombres de la base de datos, los volúmenes, el servicio de Render y el repositorio, para no perder datos ni enlaces.
+
 ### Corregido
 
 - El CD podía desplegar código de un PR desde un _fork_ (ahora exige un `push` a `main`).

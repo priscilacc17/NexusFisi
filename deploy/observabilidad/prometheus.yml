@@ -1,4 +1,4 @@
-# Prometheus de NexusFisi: lee /api/v1/metrics cada 15 s y evalúa las alertas.
+# Prometheus de NEXUS: lee /api/v1/metrics cada 15 s y evalúa las alertas.
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
@@ -7,7 +7,7 @@ rule_files:
   - /etc/prometheus/alertas.yml
 
 scrape_configs:
-  - job_name: nexusfisi-api
+  - job_name: nexus-api
     metrics_path: /api/v1/metrics
     authorization:
       type: Bearer

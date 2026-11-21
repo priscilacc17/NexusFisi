@@ -17,12 +17,12 @@ describe("métricas Prometheus", () => {
     const texto = await r.text();
     expect(r.status).toBe(200);
     expect(texto).toMatch(
-      /nexusfisi_http_peticiones_total\{[^}]*ruta="\/api\/v1\/solicitudes\/:codigo"[^}]*\} 2/,
+      /nexus_http_peticiones_total\{[^}]*ruta="\/api\/v1\/solicitudes\/:codigo"[^}]*\} 2/,
     );
     expect(texto).not.toContain("FISI-2026-00006");
-    expect(texto).toMatch(/nexusfisi_solicitudes\{[^}]*estado="OBSERVADA"[^}]*\} \d+/);
-    expect(texto).toMatch(/nexusfisi_solicitudes_vencidas\{[^}]*\} \d+/);
-    expect(texto).toContain("nexusfisi_process_resident_memory_bytes");
+    expect(texto).toMatch(/nexus_solicitudes\{[^}]*estado="OBSERVADA"[^}]*\} \d+/);
+    expect(texto).toMatch(/nexus_solicitudes_vencidas\{[^}]*\} \d+/);
+    expect(texto).toContain("nexus_process_resident_memory_bytes");
   });
 });
 

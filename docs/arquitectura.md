@@ -1,4 +1,4 @@
-# Arquitectura de NexusFisi
+# Arquitectura de NEXUS
 
 ## Vista general
 

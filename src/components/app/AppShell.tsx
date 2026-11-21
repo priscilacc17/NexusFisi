@@ -57,13 +57,13 @@ function Brand() {
         className="grid h-9 w-9 place-items-center rounded-lg bg-brand font-bold text-primary-foreground"
         style={{ fontFamily: "var(--font-display)" }}
       >
-        NF
+        NX
       </div>
       <div>
         <p className="font-bold leading-none" style={{ fontFamily: "var(--font-display)" }}>
-          NexusFisi
+          NEXUS
         </p>
-        <p className="text-[11px] opacity-70">UNMSM · Trámites académicos</p>
+        <p className="text-[11px] opacity-70">Expediente Único · UNMSM</p>
       </div>
     </div>
   );

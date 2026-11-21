@@ -33,7 +33,7 @@ if (env.SEED_DEMO_ON_START) {
 
 const app = createApp(deps);
 const server = serve({ fetch: app.fetch, port: env.PORT }, (info) =>
-  logger.info({ port: info.port }, "NexusFisi API escuchando"),
+  logger.info({ port: info.port }, "NEXUS API escuchando"),
 );
 
 const apagar = (senal: string) => {

@@ -14,7 +14,7 @@ import { useUsuario } from "@/lib/session";
 export const Route = createFileRoute("/app/perfil")({
   head: () => ({
     meta: [
-      { title: "Mi perfil · NexusFisi" },
+      { title: "Mi perfil · NEXUS" },
       { name: "description", content: "Datos de la cuenta y cambio de contraseña." },
     ],
   }),

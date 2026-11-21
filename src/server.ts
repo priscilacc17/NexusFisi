@@ -89,7 +89,7 @@ async function reenviarApi(request: Request, base: string): Promise<Response> {
         type: "about:blank",
         title: "API_NO_DISPONIBLE",
         status: 502,
-        detail: "El servidor de NexusFisi no está disponible. Intenta en unos minutos.",
+        detail: "El servidor de NEXUS no está disponible. Intenta en unos minutos.",
       },
       { status: 502, headers: { "content-type": "application/problem+json" } },
     );
@@ -100,8 +100,8 @@ async function reenviarApi(request: Request, base: string): Promise<Response> {
 // se ejecutan los scripts en línea que el propio servidor marcó (sin
 // 'unsafe-inline'). En desarrollo no se aplica, porque Vite inyecta los suyos.
 export function noncesPorPeticion(): WeakMap<Request, string> {
-  const g = globalThis as { __nexusfisiNonces?: WeakMap<Request, string> };
-  return (g.__nexusfisiNonces ??= new WeakMap());
+  const g = globalThis as { __nexusNonces?: WeakMap<Request, string> };
+  return (g.__nexusNonces ??= new WeakMap());
 }
 
 function nonceNuevo(): string {

@@ -11,10 +11,10 @@ import { verificarToken } from "./jwt.js";
 // La interfaz web usa una cookie HttpOnly (JavaScript no puede leer el token,
 // así un XSS no lo roba). Los clientes de API (Swagger, curl, pruebas) pueden
 // seguir enviando "Authorization: Bearer".
-export const COOKIE_SESION = "nf_sesion";
+export const COOKIE_SESION = "nexus_sesion";
 // Cabecera que exige la API a toda petición con cookie que modifique datos. Un
 // sitio ajeno no puede agregarla sin pasar por CORS, así que bloquea el CSRF.
-export const CABECERA_CSRF = "x-nexusfisi";
+export const CABECERA_CSRF = "x-nexus";
 const METODOS_SEGUROS = new Set(["GET", "HEAD", "OPTIONS"]);
 
 export function segundos(expiresIn: string): number {

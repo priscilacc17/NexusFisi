@@ -25,7 +25,7 @@ Se eligió una **VM con Docker** (Huawei Cloud, Azure, AWS o cualquier VPS):
 
 ```bash
 # En la VM (Ubuntu o HCE), con Docker instalado
-sudo mkdir -p /opt/nexusfisi && cd /opt/nexusfisi
+sudo mkdir -p /opt/nexus && cd /opt/nexus
 # Copiar desde el repositorio la carpeta deploy/ (docker-compose.yml, gateway/, .env.example)
 cp .env.example .env
 nano .env        # MYSQL_PASSWORD, MYSQL_ROOT_PASSWORD, JWT_SECRET (openssl rand -base64 48), PUBLIC_URL
@@ -60,7 +60,7 @@ feature/* ──PR──▶ develop ──PR──▶ main ──▶ CD: imágen
   - Frontend: chequeo de tipos, pruebas y build.
   - Construcción de ambas imágenes Docker.
 - **[`cd.yml`](../.github/workflows/cd.yml):**
-  - Publica `nexusfisi-api` y `nexusfisi-web` en GHCR, con las etiquetas `latest` y `rama-sha`.
+  - Publica `nexus-api` y `nexus-web` en GHCR, con las etiquetas `latest` y `rama-sha`.
   - Despliega por SSH en el entorno protegido `produccion` y verifica `/api/v1/health`. Si la API no responde, el job falla y muestra los logs.
 
 Secretos del entorno `produccion` en GitHub (_Settings → Environments_): `VM_HOST`, `VM_USER`, `VM_SSH_KEY` y opcionalmente `VM_PATH`. Sin `VM_HOST`, el CD publica las imágenes y omite el despliegue con un aviso.
@@ -68,7 +68,7 @@ Secretos del entorno `produccion` en GitHub (_Settings → Environments_): `VM_H
 ### Volver a una versión anterior
 
 ```bash
-cd /opt/nexusfisi
+cd /opt/nexus
 sed -i 's/^TAG=.*/TAG=main-abc1234/' .env   # etiqueta anterior (ver paquetes en GitHub)
 docker compose pull && docker compose up -d
 ```

@@ -69,8 +69,8 @@ describe("correo por API HTTPS (Render bloquea SMTP)", () => {
   };
 
   it("separa nombre y correo del remitente", () => {
-    expect(remitente("NexusFisi <nexus@gmail.com>")).toEqual({
-      nombre: "NexusFisi",
+    expect(remitente("NEXUS <nexus@gmail.com>")).toEqual({
+      nombre: "NEXUS",
       email: "nexus@gmail.com",
     });
     expect(remitente("nexus@gmail.com")).toEqual({ email: "nexus@gmail.com" });
@@ -78,18 +78,18 @@ describe("correo por API HTTPS (Render bloquea SMTP)", () => {
 
   it("Brevo: usa la cabecera api-key y el formato de su API", async () => {
     const { llamadas, f } = capturar();
-    await mailerHttp("brevo", "clave", "NexusFisi <nexus@gmail.com>", f)(correo);
+    await mailerHttp("brevo", "clave", "NEXUS <nexus@gmail.com>", f)(correo);
     const body = JSON.parse(String(llamadas[0]!.init.body));
     expect(llamadas[0]!.url).toBe("https://api.brevo.com/v3/smtp/email");
     expect((llamadas[0]!.init.headers as Record<string, string>)["api-key"]).toBe("clave");
-    expect(body.sender).toEqual({ email: "nexus@gmail.com", name: "NexusFisi" });
+    expect(body.sender).toEqual({ email: "nexus@gmail.com", name: "NEXUS" });
     expect(body.to).toEqual([{ email: "a@unmsm.edu.pe" }]);
     expect(body.htmlContent).toContain("https://x.test/y");
   });
 
   it("Resend: usa Bearer y el formato de su API", async () => {
     const { llamadas, f } = capturar();
-    await mailerHttp("resend", "clave", "NexusFisi <nexus@gmail.com>", f)(correo);
+    await mailerHttp("resend", "clave", "NEXUS <nexus@gmail.com>", f)(correo);
     expect(llamadas[0]!.url).toBe("https://api.resend.com/emails");
     expect((llamadas[0]!.init.headers as Record<string, string>)["authorization"]).toBe(
       "Bearer clave",

@@ -1,9 +1,9 @@
 {
-  "name": "nexusfisi-api",
+  "name": "nexus-api",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "API REST de NexusFisi: gestión de trámites académicos de las facultades de la UNMSM",
+  "description": "API REST de NEXUS: gestión de trámites académicos de las facultades de la UNMSM",
   "engines": {
     "node": ">=22"
   },

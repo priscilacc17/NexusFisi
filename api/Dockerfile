@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-# Imagen de la API de NexusFisi: compila TypeScript y ejecuta con un usuario sin privilegios.
+# Imagen de la API de NEXUS: compila TypeScript y ejecuta con un usuario sin privilegios.
 FROM node:22-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./

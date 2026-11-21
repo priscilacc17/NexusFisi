@@ -1,6 +1,6 @@
 # Observabilidad y operación
 
-NexusFisi expone las tres señales clásicas (**logs, métricas y trazas**), las une con un mismo identificador y define **alertas** y un **procedimiento de incidentes**. Todo es opcional y se activa por configuración: sin las variables, la API funciona igual y no envía nada.
+NEXUS expone las tres señales clásicas (**logs, métricas y trazas**), las une con un mismo identificador y define **alertas** y un **procedimiento de incidentes**. Todo es opcional y se activa por configuración: sin las variables, la API funciona igual y no envía nada.
 
 ```
                       ┌──────────── logs JSON (pino) ── stdout ──▶ docker logs / Render Logs
@@ -8,13 +8,13 @@ Navegador ─▶ nginx ─▶ API ── métricas ── /api/v1/metrics ◀─
    X-Request-Id ──────┘ └── trazas OTLP ──────────────────────────────▶ Jaeger ◀──────────┘
 ```
 
-| Señal                        | Tecnología                                         | Dónde se ve                                                       |
-| ---------------------------- | -------------------------------------------------- | ----------------------------------------------------------------- |
-| Logs                         | pino (JSON en una línea)                           | `docker compose logs api`, panel _Logs_ de Render                 |
-| Métricas                     | prom-client → Prometheus 2.55                      | Grafana `http://localhost:3001` (tablero «NexusFisi · Operación») |
-| Trazas                       | OpenTelemetry (auto-instrumentación) → Jaeger 1.62 | `http://localhost:16686`                                          |
-| Alertas                      | Reglas de Prometheus                               | `http://localhost:9090/alerts` y Grafana                          |
-| Disponibilidad de producción | GitHub Actions (cada 10 min)                       | Pestaña _Actions → Monitoreo_                                     |
+| Señal                        | Tecnología                                         | Dónde se ve                                                   |
+| ---------------------------- | -------------------------------------------------- | ------------------------------------------------------------- |
+| Logs                         | pino (JSON en una línea)                           | `docker compose logs api`, panel _Logs_ de Render             |
+| Métricas                     | prom-client → Prometheus 2.55                      | Grafana `http://localhost:3001` (tablero «NEXUS · Operación») |
+| Trazas                       | OpenTelemetry (auto-instrumentación) → Jaeger 1.62 | `http://localhost:16686`                                      |
+| Alertas                      | Reglas de Prometheus                               | `http://localhost:9090/alerts` y Grafana                      |
+| Disponibilidad de producción | GitHub Actions (cada 10 min)                       | Pestaña _Actions → Monitoreo_                                 |
 
 ## Levantar el stack de observabilidad
 
@@ -34,7 +34,7 @@ Cada petición produce una línea JSON:
 {
   "level": 30,
   "time": 1795122367045,
-  "service": "nexusfisi-api",
+  "service": "nexus-api",
   "trace_id": "89d423de70d5b2645637155ec48e75c4",
   "span_id": "adc7e7f0cb6d3c15",
   "requestId": "8c87172fbe4ad9be0351f27f1f44667f",
@@ -55,13 +55,13 @@ Cada petición produce una línea JSON:
 
 `GET /api/v1/metrics` (formato Prometheus). En producción exige `Authorization: Bearer <METRICS_TOKEN>`; sin token configurado, el endpoint no existe (404).
 
-| Métrica                                                | Tipo       | Para qué                                         |
-| ------------------------------------------------------ | ---------- | ------------------------------------------------ |
-| `nexusfisi_http_peticiones_total{metodo,ruta,estado}`  | contador   | Tráfico y errores por endpoint                   |
-| `nexusfisi_http_duracion_segundos{metodo,ruta,estado}` | histograma | Latencia p50/p95/p99                             |
-| `nexusfisi_solicitudes{estado}`                        | gauge      | Expedientes por estado (negocio)                 |
-| `nexusfisi_solicitudes_vencidas`                       | gauge      | Expedientes pendientes fuera de plazo (negocio)  |
-| `nexusfisi_process_*`, `nexusfisi_nodejs_*`            | varios     | Memoria, CPU, _event loop_, recolector de basura |
+| Métrica                                            | Tipo       | Para qué                                         |
+| -------------------------------------------------- | ---------- | ------------------------------------------------ |
+| `nexus_http_peticiones_total{metodo,ruta,estado}`  | contador   | Tráfico y errores por endpoint                   |
+| `nexus_http_duracion_segundos{metodo,ruta,estado}` | histograma | Latencia p50/p95/p99                             |
+| `nexus_solicitudes{estado}`                        | gauge      | Expedientes por estado (negocio)                 |
+| `nexus_solicitudes_vencidas`                       | gauge      | Expedientes pendientes fuera de plazo (negocio)  |
+| `nexus_process_*`, `nexus_nodejs_*`                | varios     | Memoria, CPU, _event loop_, recolector de basura |
 
 La etiqueta `ruta` es el **patrón** (`/api/v1/solicitudes/:codigo`), nunca la URL real: con un código por expediente, las series crecerían sin límite (una prueba automática lo verifica).
 

@@ -1,6 +1,6 @@
 # Despliegue en Render (Docker)
 
-NexusFisi se despliega en Render como **un servicio web Docker** construido con [`Dockerfile.render`](../Dockerfile.render). La imagen contiene la API y la interfaz:
+NEXUS se despliega en Render como **un servicio web Docker** construido con [`Dockerfile.render`](../Dockerfile.render). La imagen contiene la API y la interfaz:
 
 ```
 Navegador ──HTTPS──▶ Render (nexusfisi.onrender.com, $PORT)
@@ -41,7 +41,7 @@ Las tablas las crea la propia API al arrancar (migraciones automáticas): no hay
 
 1. Crea una cuenta en <https://www.brevo.com> con el correo que quieres usar como remitente (por ejemplo, el Gmail del equipo). Ese correo queda verificado como remitente; si usas otro, agrégalo en _Senders & IP → Senders_ y confírmalo.
 2. _SMTP & API → API Keys → Generate a new API key_ y copia la clave (`xkeysib-…`).
-3. En Render: `MAIL_PROVIDER=brevo`, `MAIL_API_KEY=<la clave>`, `MAIL_FROM=NexusFisi <tu-remitente-verificado>`.
+3. En Render: `MAIL_PROVIDER=brevo`, `MAIL_API_KEY=<la clave>`, `MAIL_FROM=NEXUS <tu-remitente-verificado>`.
 
 Alternativa con SMTP: Brevo acepta SMTP por el puerto **2525**, que Render no bloquea (`SMTP_HOST=smtp-relay.brevo.com`, `SMTP_PORT=2525`, el usuario `…@smtp-brevo.com` y la _SMTP key_ `xsmtpsib-…` como `SMTP_PASS`, sin `MAIL_PROVIDER`).
 
@@ -62,7 +62,7 @@ También se admite Resend (`MAIL_PROVIDER=resend`). Sin dominio propio, Resend s
 | `PUBLIC_URL` y `CORS_ORIGINS` | Pueden quedar **vacías**: la API usa la URL pública que Render inyecta (`RENDER_EXTERNAL_URL`). Defínelas solo si usas un dominio propio. |
 | `MAIL_PROVIDER`               | `brevo` (ya viene en el blueprint).                                                                                                       |
 | `MAIL_API_KEY`                | La API key de Brevo.                                                                                                                      |
-| `MAIL_FROM`                   | `NexusFisi <remitente-verificado@gmail.com>`                                                                                              |
+| `MAIL_FROM`                   | `NEXUS <remitente-verificado@gmail.com>`                                                                                                  |
 | `MAIL_REDIRECT_TO`            | **En una demo:** tu casilla, para que los correos de las cuentas ficticias te lleguen a ti. **En producción real:** déjalo vacío.         |
 
 `JWT_SECRET` lo genera Render automáticamente. `SEED_DEMO_ON_START=true` carga los datos de demostración la primera vez (con la base vacía); en una instalación real ponlo en `false`.
@@ -88,10 +88,10 @@ El `render.yaml` deja `autoDeploy: false` a propósito: quien despliega es el pi
 ## Probar la imagen de Render en tu equipo
 
 ```bash
-docker build -f Dockerfile.render -t nexusfisi-render .
+docker build -f Dockerfile.render -t nexus-render .
 docker run --rm -p 10000:10000 -e PORT=10000 \
   -e DATABASE_URL="mysql://nexusfisi:nexusfisi_dev@host.docker.internal:3317/nexusfisi" \
   -e JWT_SECRET="$(openssl rand -base64 48)" -e PUBLIC_URL=http://localhost:10000 \
-  -e SEED_DEMO_ON_START=true nexusfisi-render
+  -e SEED_DEMO_ON_START=true nexus-render
 # http://localhost:10000
 ```
