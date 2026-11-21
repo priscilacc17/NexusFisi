@@ -1,0 +1,16 @@
+{
+  "escenario": "carga",
+  "fecha": "2026-11-19T20:38:29.194Z",
+  "peticiones": 25317,
+  "peticiones_por_segundo": 108.95839874827476,
+  "latencia_ms": {
+    "promedio": 4.468979305644459,
+    "p90": 7.336644600000001,
+    "p95": 9.59618559999999,
+    "max": 132.448075
+  },
+  "tasa_error": 0,
+  "checks_ok": 1,
+  "vus_max": 50,
+  "umbrales_ok": true
+}

@@ -1,0 +1,36 @@
+# SAST: análisis estático de CodeQL sobre la API y la interfaz (JavaScript/TypeScript).
+# Los hallazgos aparecen en Security → Code scanning.
+name: CodeQL
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    - cron: "17 6 * * 1"
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  analizar:
+    name: Analizar (javascript-typescript)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+          queries: security-extended
+          config: |
+            paths-ignore:
+              - "**/node_modules"
+              - "**/dist"
+              - "**/test"
+              - e2e
+              - perf
+      - uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:javascript-typescript"

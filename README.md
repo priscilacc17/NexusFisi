@@ -1,10 +1,12 @@
-# NexusFisi
+# NEXUS — Núcleo de EXpediente Único Sanmarquino
 
-Plataforma web para **registrar, gestionar, priorizar, atender y monitorear los trámites académicos de las facultades de la Universidad Nacional Mayor de San Marcos (UNMSM)**.
+**NEXUS** es la plataforma web para **registrar, gestionar, priorizar, atender y monitorear los trámites académicos de las facultades de la Universidad Nacional Mayor de San Marcos (UNMSM)**.
 
 Cada facultad tiene su propio catálogo de trámites, sus áreas responsables, su personal y su numeración de expedientes (`FISI-2026-00001`, `FM-2026-00001`…). El personal de una facultad nunca ve ni modifica las solicitudes de otra. Un administrador central gestiona las facultades y ve los indicadores de toda la universidad.
 
-> Proyecto del curso *Taller de Construcción de Software Web* — propuesta «TrámiteUni» adaptada a la UNMSM. El enunciado está en [`docs/presentacion/`](docs/presentacion/).
+> **El nombre:** NEXUS es la sigla de **N**úcleo de **EX**pediente **Ú**nico **S**anmarquino: un solo expediente digital por trámite, para todas las facultades. El proyecto empezó como «NexusFisi», centrado en la FISI; el repositorio y la URL de la demostración conservan ese nombre.
+>
+> Proyecto del curso _Taller de Construcción de Software Web_ — propuesta «TrámiteUni» adaptada a la UNMSM. El enunciado está en [`docs/presentacion/`](docs/presentacion/).
 >
 > La interfaz se generó inicialmente con Lovable y el repositorio sigue conectado a su editor, pero **la aplicación no depende de Lovable para funcionar ni para desplegarse**: se construye como imágenes Docker y corre en Render o en cualquier servidor con Docker.
 
@@ -17,13 +19,14 @@ Navegador ──HTTPS──▶ Gateway nginx ──/api/*──▶ API REST (Nod
                                      (React + TanStack Start)
 ```
 
-| Capa | Tecnología | Carpeta |
-|---|---|---|
-| Frontend | React 19, TypeScript, TanStack Router/Start, TanStack Query, Tailwind CSS, Radix/shadcn | [`src/`](src/) |
-| API REST | Node 22, Hono, Zod + OpenAPI 3.1, JWT (jose), bcrypt, Drizzle ORM | [`api/`](api/) |
-| Base de datos | MySQL 8.4, migraciones versionadas | [`api/drizzle/`](api/drizzle/) |
-| Despliegue | Docker, docker compose, nginx como API gateway | [`deploy/`](deploy/) |
-| CI/CD | GitHub Actions → GitHub Container Registry → VM | [`.github/workflows/`](.github/workflows/) |
+| Capa           | Tecnología                                                                              | Carpeta                                            |
+| -------------- | --------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| Frontend       | React 19, TypeScript, TanStack Router/Start, TanStack Query, Tailwind CSS, Radix/shadcn | [`src/`](src/)                                     |
+| API REST       | Node 22, Hono, Zod + OpenAPI 3.1, JWT (jose), bcrypt, Drizzle ORM                       | [`api/`](api/)                                     |
+| Base de datos  | MySQL 8.4, migraciones versionadas                                                      | [`api/drizzle/`](api/drizzle/)                     |
+| Despliegue     | Docker, docker compose, nginx como API gateway                                          | [`deploy/`](deploy/)                               |
+| CI/CD          | GitHub Actions → Render (deploy hook) / GHCR → VM                                       | [`.github/workflows/`](.github/workflows/)         |
+| Observabilidad | Prometheus, Grafana, OpenTelemetry + Jaeger, logs JSON (pino)                           | [`deploy/observabilidad/`](deploy/observabilidad/) |
 
 El stack del enunciado (Spring Boot) era referencial: se eligió **TypeScript de punta a punta** para compartir lenguaje, tipos y validaciones entre frontend y API. La justificación está en [docs/arquitectura.md](docs/arquitectura.md).
 
@@ -61,23 +64,24 @@ bun run dev                     # /api se redirige a la API local
 
 Contraseña de todas: `Demo1234`. Son datos ficticios, no personas reales.
 
-| Rol | Correo |
-|---|---|
-| Estudiante (FISI) | `estudiante.fisi@unmsm.edu.pe`, `estudiante2.fisi@unmsm.edu.pe` |
-| Técnico (FISI) | `tecnico.fisi@unmsm.edu.pe`, `tecnico2.fisi@unmsm.edu.pe` |
-| Supervisor (FISI) | `supervisor.fisi@unmsm.edu.pe` |
-| Administrador de facultad (FISI) | `admin.fisi@unmsm.edu.pe` |
-| Administrador central | `admin.central@unmsm.edu.pe` |
-| Medicina / Derecho | `estudiante.fm@…`, `supervisor.fm@…`, `tecnico.fm@…`, `estudiante.fdcp@…`, `supervisor.fdcp@…`, `tecnico.fdcp@…` |
+| Rol                              | Correo                                                                                                           |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Estudiante (FISI)                | `estudiante.fisi@unmsm.edu.pe`, `estudiante2.fisi@unmsm.edu.pe`                                                  |
+| Técnico (FISI)                   | `tecnico.fisi@unmsm.edu.pe`, `tecnico2.fisi@unmsm.edu.pe`                                                        |
+| Supervisor (FISI)                | `supervisor.fisi@unmsm.edu.pe`                                                                                   |
+| Administrador de facultad (FISI) | `admin.fisi@unmsm.edu.pe`                                                                                        |
+| Administrador central            | `admin.central@unmsm.edu.pe`                                                                                     |
+| Medicina / Derecho               | `estudiante.fm@…`, `supervisor.fm@…`, `tecnico.fm@…`, `estudiante.fdcp@…`, `supervisor.fdcp@…`, `tecnico.fdcp@…` |
 
 ## Pruebas
 
 ```bash
-cd api && npm test     # 78 pruebas: unitarias + integración contra MySQL real
-npx vitest run         # frontend: cliente HTTP, rutas, panel de acciones
+cd api && npm test                       # 89 pruebas: unitarias + integración contra MySQL real
+npx vitest run                           # frontend: 12 pruebas
+cd e2e && npx playwright test            # 12 pruebas de aceptación en navegador (stack levantado)
 ```
 
-Detalle de la estrategia y de los escenarios BDD cubiertos en [docs/pruebas.md](docs/pruebas.md).
+Además: carga y estrés con k6, SAST (CodeQL, Semgrep) y DAST (OWASP ZAP). Resultados en el [informe de pruebas](docs/informe-pruebas.md); estrategia y escenarios BDD en [docs/pruebas.md](docs/pruebas.md).
 
 ## Despliegue
 
@@ -90,17 +94,23 @@ cd deploy
 cp .env.example .env    # completa contraseñas y JWT_SECRET
 docker compose up -d --build
 docker compose exec api node dist/db/seed.js   # solo en entornos de demostración
+docker compose --profile observabilidad up -d  # opcional: Prometheus, Grafana y Jaeger
 ```
 
 Guía completa (VM, TLS, CI/CD, respaldos) en [docs/despliegue.md](docs/despliegue.md).
 
 ## Documentación
 
+- [Manual de usuario](docs/manual-usuario.md)
+- [Manual técnico](docs/manual-tecnico.md)
 - [Arquitectura y modelo de datos](docs/arquitectura.md)
 - [API REST](docs/api.md) — referencia interactiva en `/api/docs`
 - [Seguridad (OWASP)](docs/seguridad.md)
-- [Pruebas](docs/pruebas.md)
+- [Pruebas](docs/pruebas.md) e [informe de pruebas de la Fase IV](docs/informe-pruebas.md)
+- [Observabilidad y gestión de incidentes](docs/observabilidad.md)
+- [Revisión final de calidad](docs/revision-final.md)
 - [Despliegue en Render](docs/despliegue-render.md)
 - [Despliegue en VM y ambientes](docs/despliegue.md)
 - [Flujo de ramas](docs/git-ramas.md)
 - [Registro de uso de IA](docs/registro-ia.md)
+- [Registro de cambios](CHANGELOG.md)

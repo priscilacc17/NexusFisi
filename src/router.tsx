@@ -6,7 +6,9 @@ import { routeTree } from "./routeTree.gen";
 
 // Nonce de la CSP de esta petición (lo genera src/server.ts). En el navegador no hace falta.
 const nonceDeLaPeticion = createIsomorphicFn()
-  .server(() => (globalThis as { __nexusfisiNonces?: WeakMap<Request, string> }).__nexusfisiNonces?.get(getRequest()))
+  .server(() =>
+    (globalThis as { __nexusNonces?: WeakMap<Request, string> }).__nexusNonces?.get(getRequest()),
+  )
   .client(() => undefined);
 
 export const getRouter = () => {

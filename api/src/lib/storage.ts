@@ -30,19 +30,33 @@ export function detectarTipo(buf: Uint8Array) {
 }
 
 export function limpiarNombre(nombre: string): string {
-  const base = path.basename(nombre).replace(/[^\p{L}\p{N}._ -]/gu, "_").trim();
+  const base = path
+    .basename(nombre)
+    .replace(/[^\p{L}\p{N}._ -]/gu, "_")
+    .trim();
   return (base || "archivo").slice(0, 200);
 }
 
 export async function validarArchivos(archivos: File[], maxMb: number) {
-  if (archivos.length > MAX_ARCHIVOS) throw badRequest(`Puedes adjuntar como máximo ${MAX_ARCHIVOS} archivos por envío.`);
-  const leidos: { file: File; buf: Uint8Array; tipo: NonNullable<ReturnType<typeof detectarTipo>> }[] = [];
+  if (archivos.length > MAX_ARCHIVOS)
+    throw badRequest(`Puedes adjuntar como máximo ${MAX_ARCHIVOS} archivos por envío.`);
+  const leidos: {
+    file: File;
+    buf: Uint8Array;
+    tipo: NonNullable<ReturnType<typeof detectarTipo>>;
+  }[] = [];
   for (const file of archivos) {
     if (file.size === 0) throw badRequest(`El archivo "${file.name}" está vacío.`);
-    if (file.size > maxMb * 1024 * 1024) throw new AppError(413, "ARCHIVO_DEMASIADO_GRANDE", `"${file.name}" supera ${maxMb} MB.`);
+    if (file.size > maxMb * 1024 * 1024)
+      throw new AppError(413, "ARCHIVO_DEMASIADO_GRANDE", `"${file.name}" supera ${maxMb} MB.`);
     const buf = new Uint8Array(await file.arrayBuffer());
     const tipo = detectarTipo(buf);
-    if (!tipo) throw new AppError(415, "TIPO_NO_PERMITIDO", `"${file.name}" no es un PDF, JPG o PNG válido.`);
+    if (!tipo)
+      throw new AppError(
+        415,
+        "TIPO_NO_PERMITIDO",
+        `"${file.name}" no es un PDF, JPG o PNG válido.`,
+      );
     leidos.push({ file, buf, tipo });
   }
   return leidos;
@@ -75,7 +89,11 @@ export function almacenDb(db: Db): Almacen {
       await db.insert(archivos).values({ nombreAlmacenado: nombre, datos: Buffer.from(datos) });
     },
     async leer(nombre) {
-      const [f] = await db.select().from(archivos).where(eq(archivos.nombreAlmacenado, nombre)).limit(1);
+      const [f] = await db
+        .select()
+        .from(archivos)
+        .where(eq(archivos.nombreAlmacenado, nombre))
+        .limit(1);
       if (!f) throw new Error("archivo no encontrado");
       return f.datos;
     },
@@ -85,13 +103,21 @@ export function almacenDb(db: Db): Almacen {
   };
 }
 
-export async function guardarArchivos(almacen: Almacen, leidos: Awaited<ReturnType<typeof validarArchivos>>): Promise<ArchivoGuardado[]> {
+export async function guardarArchivos(
+  almacen: Almacen,
+  leidos: Awaited<ReturnType<typeof validarArchivos>>,
+): Promise<ArchivoGuardado[]> {
   const guardados: ArchivoGuardado[] = [];
   try {
     for (const { file, buf, tipo } of leidos) {
       const nombreAlmacenado = `${randomUUID()}.${tipo.ext}`;
       await almacen.guardar(nombreAlmacenado, buf);
-      guardados.push({ nombreOriginal: limpiarNombre(file.name), nombreAlmacenado, mime: tipo.mime, tamano: file.size });
+      guardados.push({
+        nombreOriginal: limpiarNombre(file.name),
+        nombreAlmacenado,
+        mime: tipo.mime,
+        tamano: file.size,
+      });
     }
   } catch (e) {
     await borrarArchivos(almacen, guardados);
@@ -100,6 +126,9 @@ export async function guardarArchivos(almacen: Almacen, leidos: Awaited<ReturnTy
   return guardados;
 }
 
-export async function borrarArchivos(almacen: Almacen, lista: Pick<ArchivoGuardado, "nombreAlmacenado">[]) {
+export async function borrarArchivos(
+  almacen: Almacen,
+  lista: Pick<ArchivoGuardado, "nombreAlmacenado">[],
+) {
   await Promise.all(lista.map((a) => almacen.borrar(a.nombreAlmacenado).catch(() => undefined)));
 }

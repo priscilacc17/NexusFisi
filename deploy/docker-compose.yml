@@ -1,4 +1,4 @@
-# Despliegue de NexusFisi en una VM: MySQL + API + frontend + gateway nginx.
+# Despliegue de NEXUS en una VM: MySQL + API + frontend + gateway nginx.
 #   cp .env.example .env   (y completa los secretos)
 #   docker compose up -d --build        # construye localmente
 #   docker compose pull && docker compose up -d   # usa las imágenes publicadas por CI/CD
@@ -24,7 +24,7 @@ services:
     # Sin puertos publicados: solo la API llega a la base, por la red interna.
 
   api:
-    image: ${REGISTRY:-ghcr.io/priscilacc17}/nexusfisi-api:${TAG:-latest}
+    image: ${REGISTRY:-ghcr.io/priscilacc17}/nexus-api:${TAG:-latest}
     build: ../api
     restart: unless-stopped
     depends_on:
@@ -50,11 +50,15 @@ services:
       SMTP_PASS: ${SMTP_PASS:-}
       MAIL_FROM: ${MAIL_FROM:-}
       MAIL_REDIRECT_TO: ${MAIL_REDIRECT_TO:-}
+      METRICS_TOKEN: ${METRICS_TOKEN:-}
+      # Trazas: con el perfil "observabilidad" apunta a Jaeger (http://jaeger:4318).
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
+      OTEL_SERVICE_NAME: nexus-api
     volumes:
       - uploads:/data/uploads
 
   web:
-    image: ${REGISTRY:-ghcr.io/priscilacc17}/nexusfisi-web:${TAG:-latest}
+    image: ${REGISTRY:-ghcr.io/priscilacc17}/nexus-web:${TAG:-latest}
     build:
       context: ..
       args:
@@ -71,6 +75,49 @@ services:
       - "${HTTP_PORT:-80}:80"
     volumes:
       - ./gateway/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+
+  # --- Observabilidad (opcional): docker compose --profile observabilidad up -d ---
+  jaeger:
+    image: jaegertracing/all-in-one:1.62.0
+    profiles: [observabilidad]
+    restart: unless-stopped
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "127.0.0.1:16686:16686" # interfaz de Jaeger (trazas)
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    profiles: [observabilidad]
+    restart: unless-stopped
+    depends_on: [api]
+    environment:
+      METRICS_TOKEN: ${METRICS_TOKEN:-}
+    # El token se escribe en un archivo al arrancar: no queda en ninguna configuración versionada.
+    entrypoint:
+      [
+        "/bin/sh",
+        "-c",
+        'printf %s "$$METRICS_TOKEN" > /tmp/metrics_token && exec /bin/prometheus --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.retention.time=15d',
+      ]
+    volumes:
+      - ./observabilidad/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./observabilidad/alertas.yml:/etc/prometheus/alertas.yml:ro
+    ports:
+      - "127.0.0.1:9090:9090" # interfaz de Prometheus (métricas y alertas)
+
+  grafana:
+    image: grafana/grafana:11.3.1
+    profiles: [observabilidad]
+    restart: unless-stopped
+    depends_on: [prometheus, jaeger]
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./observabilidad/grafana/provisioning:/etc/grafana/provisioning:ro
+    ports:
+      - "127.0.0.1:3001:3000" # tablero de Grafana
 
 volumes:
   mysql-data:

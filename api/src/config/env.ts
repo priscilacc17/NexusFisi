@@ -24,7 +24,12 @@ const schema = z
     CORS_ORIGINS: z
       .string()
       .default("http://localhost:8080,http://localhost:5173")
-      .transform((v) => v.split(",").map((s) => s.trim()).filter(Boolean)),
+      .transform((v) =>
+        v
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean),
+      ),
     // La sesión viaja en una cookie HttpOnly; en producción solo por HTTPS.
     COOKIE_SECURE: z.enum(["true", "false", "auto"]).default("auto"),
     // "disk" (volumen, VM con Docker) o "db" (dentro de MySQL; plataformas sin disco persistente, p. ej. Render).
@@ -48,7 +53,12 @@ const schema = z
     MAIL_REDIRECT_TO: z.string().email().optional(),
     // Enviar por correo los avisos importantes (observada, resuelta, asignada).
     MAIL_NOTIFICACIONES: bool("true"),
-    LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"]).default("info"),
+    // Token que debe enviar Prometheus para leer /api/v1/metrics. Sin token, en
+    // producción el endpoint queda deshabilitado (en desarrollo es abierto).
+    METRICS_TOKEN: z.string().min(16, "METRICS_TOKEN debe tener al menos 16 caracteres").optional(),
+    LOG_LEVEL: z
+      .enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"])
+      .default("info"),
     // Detrás de un proxy (nginx, Render) la IP real del cliente llega en X-Forwarded-For.
     TRUST_PROXY: bool("false"),
     MIGRATE_ON_START: bool("true"),
@@ -57,13 +67,28 @@ const schema = z
   })
   .superRefine((env, ctx) => {
     if (env.NODE_ENV === "production" && env.JWT_SECRET.startsWith("reemplaza")) {
-      ctx.addIssue({ code: "custom", path: ["JWT_SECRET"], message: "JWT_SECRET es el valor de ejemplo; genera uno aleatorio para producción" });
+      ctx.addIssue({
+        code: "custom",
+        path: ["JWT_SECRET"],
+        message: "JWT_SECRET es el valor de ejemplo; genera uno aleatorio para producción",
+      });
     }
-    if ((env.MAIL_PROVIDER === "brevo" || env.MAIL_PROVIDER === "resend") && (!env.MAIL_API_KEY || !env.MAIL_FROM)) {
-      ctx.addIssue({ code: "custom", path: ["MAIL_API_KEY"], message: `Con MAIL_PROVIDER=${env.MAIL_PROVIDER} hay que definir MAIL_API_KEY y MAIL_FROM` });
+    if (
+      (env.MAIL_PROVIDER === "brevo" || env.MAIL_PROVIDER === "resend") &&
+      (!env.MAIL_API_KEY || !env.MAIL_FROM)
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["MAIL_API_KEY"],
+        message: `Con MAIL_PROVIDER=${env.MAIL_PROVIDER} hay que definir MAIL_API_KEY y MAIL_FROM`,
+      });
     }
     if (env.SMTP_HOST && (!env.SMTP_USER || !env.SMTP_PASS)) {
-      ctx.addIssue({ code: "custom", path: ["SMTP_USER"], message: "Con SMTP_HOST hay que definir SMTP_USER y SMTP_PASS" });
+      ctx.addIssue({
+        code: "custom",
+        path: ["SMTP_USER"],
+        message: "Con SMTP_HOST hay que definir SMTP_USER y SMTP_PASS",
+      });
     }
   });
 
@@ -73,7 +98,9 @@ export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
   // Una variable definida pero vacía (habitual en docker compose y en los paneles
   // de Render) cuenta como no definida: toma su valor por defecto.
   const limpio: Record<string, string> = Object.fromEntries(
-    Object.entries(source).filter((e): e is [string, string] => e[1] !== undefined && e[1].trim() !== ""),
+    Object.entries(source).filter(
+      (e): e is [string, string] => e[1] !== undefined && e[1].trim() !== "",
+    ),
   );
   // En Render, si no se definió PUBLIC_URL, se usa la URL pública que Render
   // inyecta sola (RENDER_EXTERNAL_URL). Lo mismo para el origen permitido por CORS.
@@ -84,7 +111,9 @@ export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
   }
   const parsed = schema.safeParse(limpio);
   if (!parsed.success) {
-    const detalle = parsed.error.issues.map((i) => `  - ${i.path.join(".")}: ${i.message}`).join("\n");
+    const detalle = parsed.error.issues
+      .map((i) => `  - ${i.path.join(".")}: ${i.message}`)
+      .join("\n");
     throw new Error(`Configuración inválida:\n${detalle}`);
   }
   return parsed.data;

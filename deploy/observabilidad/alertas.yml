@@ -1,0 +1,46 @@
+# Reglas de alerta. Se ven en Prometheus (Alerts) y en el tablero de Grafana.
+groups:
+  - name: nexus
+    rules:
+      - alert: ApiCaida
+        expr: up{job="nexus-api"} == 0
+        for: 1m
+        labels: { severidad: critica }
+        annotations:
+          resumen: "La API de NEXUS no responde"
+          descripcion: "Prometheus no puede leer las métricas desde hace más de 1 minuto. Revisar 'docker compose logs api'."
+
+      - alert: TasaDeErroresAlta
+        expr: |
+          sum(rate(nexus_http_peticiones_total{estado=~"5.."}[5m]))
+            / clamp_min(sum(rate(nexus_http_peticiones_total[5m])), 0.001) > 0.05
+        for: 5m
+        labels: { severidad: alta }
+        annotations:
+          resumen: "Más del 5 % de las peticiones terminan en error 5xx"
+          descripcion: "Buscar en los logs los errores con su requestId y abrir la traza en Jaeger."
+
+      - alert: LatenciaAlta
+        expr: |
+          histogram_quantile(0.95, sum by (le) (rate(nexus_http_duracion_segundos_bucket[5m]))) > 1
+        for: 10m
+        labels: { severidad: media }
+        annotations:
+          resumen: "El 5 % de las peticiones más lentas tarda más de 1 s"
+          descripcion: "Revisar en Jaeger qué consulta a MySQL o qué ruta concentra el tiempo."
+
+      - alert: SolicitudesVencidas
+        expr: nexus_solicitudes_vencidas > 10
+        for: 30m
+        labels: { severidad: negocio }
+        annotations:
+          resumen: "Hay más de 10 solicitudes que superaron su plazo"
+          descripcion: "Alerta de negocio para la supervisión: revisar la bandeja ordenada por vencimiento."
+
+      - alert: MemoriaAlta
+        expr: nexus_process_resident_memory_bytes > 400 * 1024 * 1024
+        for: 10m
+        labels: { severidad: media }
+        annotations:
+          resumen: "La API usa más de 400 MB de memoria"
+          descripcion: "Posible fuga o carga sostenida; comparar con el tablero de Grafana."

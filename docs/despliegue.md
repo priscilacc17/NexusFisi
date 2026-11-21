@@ -4,11 +4,11 @@
 
 ## Ambientes
 
-| Ambiente | Dónde | Base de datos | Cómo se activa |
-|---|---|---|---|
+| Ambiente       | Dónde                     | Base de datos                                                     | Cómo se activa                                                 |
+| -------------- | ------------------------- | ----------------------------------------------------------------- | -------------------------------------------------------------- |
 | **Desarrollo** | Equipo de cada integrante | MySQL en Docker (`deploy/docker-compose.dev.yml`, 127.0.0.1:3317) | `npm run dev` (API) + `bun run dev` (frontend), con `api/.env` |
-| **Prueba** | GitHub Actions | Servicio MySQL efímero del pipeline | Cada push / pull request a `develop` o `main` |
-| **Producción** | VM con Docker | Contenedor MySQL con volumen persistente | Push a `main` (CD) o `docker compose up -d` manual |
+| **Prueba**     | GitHub Actions            | Servicio MySQL efímero del pipeline                               | Cada push / pull request a `develop` o `main`                  |
+| **Producción** | VM con Docker             | Contenedor MySQL con volumen persistente                          | Push a `main` (CD) o `docker compose up -d` manual             |
 
 La configuración cambia solo por variables de entorno (`NODE_ENV`, `DATABASE_URL`, `JWT_SECRET`, etc.), nunca editando código.
 
@@ -25,7 +25,7 @@ Se eligió una **VM con Docker** (Huawei Cloud, Azure, AWS o cualquier VPS):
 
 ```bash
 # En la VM (Ubuntu o HCE), con Docker instalado
-sudo mkdir -p /opt/nexusfisi && cd /opt/nexusfisi
+sudo mkdir -p /opt/nexus && cd /opt/nexus
 # Copiar desde el repositorio la carpeta deploy/ (docker-compose.yml, gateway/, .env.example)
 cp .env.example .env
 nano .env        # MYSQL_PASSWORD, MYSQL_ROOT_PASSWORD, JWT_SECRET (openssl rand -base64 48), PUBLIC_URL
@@ -60,15 +60,15 @@ feature/* ──PR──▶ develop ──PR──▶ main ──▶ CD: imágen
   - Frontend: chequeo de tipos, pruebas y build.
   - Construcción de ambas imágenes Docker.
 - **[`cd.yml`](../.github/workflows/cd.yml):**
-  - Publica `nexusfisi-api` y `nexusfisi-web` en GHCR, con las etiquetas `latest` y `rama-sha`.
+  - Publica `nexus-api` y `nexus-web` en GHCR, con las etiquetas `latest` y `rama-sha`.
   - Despliega por SSH en el entorno protegido `produccion` y verifica `/api/v1/health`. Si la API no responde, el job falla y muestra los logs.
 
-Secretos del entorno `produccion` en GitHub (*Settings → Environments*): `VM_HOST`, `VM_USER`, `VM_SSH_KEY` y opcionalmente `VM_PATH`. Sin `VM_HOST`, el CD publica las imágenes y omite el despliegue con un aviso.
+Secretos del entorno `produccion` en GitHub (_Settings → Environments_): `VM_HOST`, `VM_USER`, `VM_SSH_KEY` y opcionalmente `VM_PATH`. Sin `VM_HOST`, el CD publica las imágenes y omite el despliegue con un aviso.
 
 ### Volver a una versión anterior
 
 ```bash
-cd /opt/nexusfisi
+cd /opt/nexus
 sed -i 's/^TAG=.*/TAG=main-abc1234/' .env   # etiqueta anterior (ver paquetes en GitHub)
 docker compose pull && docker compose up -d
 ```
@@ -87,5 +87,5 @@ docker run --rm -v nexusfisi_uploads:/data -v "$PWD":/out alpine tar czf /out/ad
 ## Operación
 
 - **Logs:** `docker compose logs -f api`. Son JSON, una línea por petición con `requestId`, método, ruta, estado y duración.
-- **Estado:** `GET /api/v1/health` responde 503 si la base no está disponible, y Docker marca el contenedor como *unhealthy*.
+- **Estado:** `GET /api/v1/health` responde 503 si la base no está disponible, y Docker marca el contenedor como _unhealthy_.
 - **Reinicio:** `restart: unless-stopped` en todos los servicios.

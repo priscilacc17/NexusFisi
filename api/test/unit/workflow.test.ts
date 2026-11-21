@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { accionesPermitidas, estadoDestino, puede, validarDatos, type Actor, type EstadoSolicitud } from "../../src/domain/workflow.js";
+import {
+  accionesPermitidas,
+  estadoDestino,
+  puede,
+  validarDatos,
+  type Actor,
+  type EstadoSolicitud,
+} from "../../src/domain/workflow.js";
 
 const FAC = 1;
 const estudiante: Actor = { id: 10, rol: "ESTUDIANTE", facultadId: FAC };
@@ -12,7 +19,13 @@ const adminFac: Actor = { id: 40, rol: "ADMIN", facultadId: FAC };
 const adminCentral: Actor = { id: 41, rol: "ADMIN", facultadId: null };
 
 const sol = (over: Partial<EstadoSolicitud> = {}): EstadoSolicitud => ({
-  estado: "REGISTRADA", estadoPrevio: null, estudianteId: 10, responsableId: null, facultadId: FAC, reaperturas: 0, ...over,
+  estado: "REGISTRADA",
+  estadoPrevio: null,
+  estudianteId: 10,
+  responsableId: null,
+  facultadId: FAC,
+  reaperturas: 0,
+  ...over,
 });
 
 describe("flujo de estados: quién puede hacer qué", () => {
@@ -44,15 +57,27 @@ describe("flujo de estados: quién puede hacer qué", () => {
 
   it("observar se permite en evaluación (supervisor) y en atención (responsable o supervisor)", () => {
     expect(puede(supervisor, "OBSERVAR", sol({ estado: "EN_EVALUACION" }))).toBe(true);
-    expect(puede(tecnico, "OBSERVAR", sol({ estado: "EN_EVALUACION", responsableId: 30 }))).toBe(false);
-    expect(puede(tecnico, "OBSERVAR", sol({ estado: "EN_ATENCION", responsableId: 30 }))).toBe(true);
-    expect(puede(otroTecnico, "OBSERVAR", sol({ estado: "EN_ATENCION", responsableId: 30 }))).toBe(false);
+    expect(puede(tecnico, "OBSERVAR", sol({ estado: "EN_EVALUACION", responsableId: 30 }))).toBe(
+      false,
+    );
+    expect(puede(tecnico, "OBSERVAR", sol({ estado: "EN_ATENCION", responsableId: 30 }))).toBe(
+      true,
+    );
+    expect(puede(otroTecnico, "OBSERVAR", sol({ estado: "EN_ATENCION", responsableId: 30 }))).toBe(
+      false,
+    );
   });
 
   it("la corrección devuelve la solicitud al estado desde el que se observó", () => {
-    expect(estadoDestino("CORREGIR", sol({ estado: "OBSERVADA", estadoPrevio: "EN_ATENCION" }))).toBe("EN_ATENCION");
-    expect(estadoDestino("CORREGIR", sol({ estado: "OBSERVADA", estadoPrevio: "EN_EVALUACION" }))).toBe("EN_EVALUACION");
-    expect(estadoDestino("CORREGIR", sol({ estado: "OBSERVADA", estadoPrevio: null }))).toBe("EN_EVALUACION");
+    expect(
+      estadoDestino("CORREGIR", sol({ estado: "OBSERVADA", estadoPrevio: "EN_ATENCION" })),
+    ).toBe("EN_ATENCION");
+    expect(
+      estadoDestino("CORREGIR", sol({ estado: "OBSERVADA", estadoPrevio: "EN_EVALUACION" })),
+    ).toBe("EN_EVALUACION");
+    expect(estadoDestino("CORREGIR", sol({ estado: "OBSERVADA", estadoPrevio: null }))).toBe(
+      "EN_EVALUACION",
+    );
   });
 
   it("solo el dueño corrige, desiste, cierra conforme o reabre", () => {

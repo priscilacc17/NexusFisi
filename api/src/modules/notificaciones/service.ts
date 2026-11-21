@@ -12,10 +12,19 @@ export async function notificar(
   texto: string,
   opts: { solicitudId?: number; autorId?: number; now: Date },
 ) {
-  const ids = [...new Set(destinatarios.filter((d): d is number => typeof d === "number" && d !== opts.autorId))];
+  const ids = [
+    ...new Set(
+      destinatarios.filter((d): d is number => typeof d === "number" && d !== opts.autorId),
+    ),
+  ];
   if (ids.length === 0) return;
   await conn.insert(notificaciones).values(
-    ids.map((usuarioId) => ({ usuarioId, solicitudId: opts.solicitudId ?? null, texto: texto.slice(0, 255), createdAt: opts.now })),
+    ids.map((usuarioId) => ({
+      usuarioId,
+      solicitudId: opts.solicitudId ?? null,
+      texto: texto.slice(0, 255),
+      createdAt: opts.now,
+    })),
   );
 }
 
@@ -23,7 +32,13 @@ export async function supervisoresDe(conn: Conn, facultadId: number): Promise<nu
   const filas = await conn
     .select({ id: usuarios.id })
     .from(usuarios)
-    .where(and(eq(usuarios.facultadId, facultadId), eq(usuarios.rol, "SUPERVISOR"), eq(usuarios.activo, true)));
+    .where(
+      and(
+        eq(usuarios.facultadId, facultadId),
+        eq(usuarios.rol, "SUPERVISOR"),
+        eq(usuarios.activo, true),
+      ),
+    );
   return filas.map((f) => f.id);
 }
 
@@ -31,5 +46,10 @@ export async function marcarLeidas(db: Db, usuarioId: number, ids?: number[]) {
   await db
     .update(notificaciones)
     .set({ leida: true })
-    .where(and(eq(notificaciones.usuarioId, usuarioId), ids ? inArray(notificaciones.id, ids) : undefined));
+    .where(
+      and(
+        eq(notificaciones.usuarioId, usuarioId),
+        ids ? inArray(notificaciones.id, ids) : undefined,
+      ),
+    );
 }
