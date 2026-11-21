@@ -38,7 +38,7 @@ jobs:
       TEST_DATABASE_URL: mysql://nexusfisi:nexusfisi_ci@127.0.0.1:3306/nexusfisi_test
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -64,7 +64,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
       - run: bun install --frozen-lockfile
@@ -134,7 +134,7 @@ jobs:
           docker run -d --name app --network host             -e PORT=8080 -e PUBLIC_URL=http://localhost:8080 -e COOKIE_SECURE=false             -e DATABASE_URL=mysql://nexusfisi:nexusfisi_ci@127.0.0.1:3306/nexusfisi             -e JWT_SECRET=clave-de-ci-solo-para-pruebas-de-aceptacion-0123456789             -e SEED_DEMO_ON_START=true -e AUTH_RATE_LIMIT=200 nexus:ci
           for i in $(seq 1 60); do curl -fsS http://localhost:8080/api/v1/health && exit 0; sleep 3; done
           docker logs app; exit 1
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
