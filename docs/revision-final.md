@@ -101,7 +101,6 @@ La IA (Lovable para la interfaz inicial y Claude Code para el resto) se usó com
 - **Errores de la IA detectados en la revisión** (ejemplos de las fases III y IV): una columna mal mapeada (`updated_at`), un límite de login que bloqueaba a todo el campus, la cookie de _logout_ sin atributos y archivos estáticos sin cabeceras. Todos se detectaron con pruebas o escáneres, no por confianza.
 - **Secretos y la IA:** para configurar el despliegue se pegaron en el chat con la IA credenciales reales (contraseña de aplicación de Gmail, contraseña de Aiven, clave de Brevo). Nunca se versionaron, pero contradice el criterio 2 del registro de IA: **antes de cerrar el curso se rotan las tres** y en adelante se cargan directamente en Render sin pasar por el asistente.
 - **Historial honesto:** no se reescribió el historial de Git ni se alteraron fechas de commits; las ramas y merges reflejan el trabajo real.
-- **Pendiente del equipo:** completar la columna «Responsable» del registro con el integrante que revisó cada uso.
 
 ## Veredicto
 
