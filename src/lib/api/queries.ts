@@ -24,8 +24,10 @@ import type {
 export const qk = {
   me: ["me"] as const,
   facultades: ["facultades"] as const,
-  tipos: (facultadId?: number, inactivos?: boolean) => ["tipos", facultadId ?? null, !!inactivos] as const,
-  areas: (facultadId?: number, inactivas?: boolean) => ["areas", facultadId ?? null, !!inactivas] as const,
+  tipos: (facultadId?: number, inactivos?: boolean) =>
+    ["tipos", facultadId ?? null, !!inactivos] as const,
+  areas: (facultadId?: number, inactivas?: boolean) =>
+    ["areas", facultadId ?? null, !!inactivas] as const,
   solicitudes: (f: FiltrosSolicitudes) => ["solicitudes", f] as const,
   solicitud: (codigo: string) => ["solicitud", codigo] as const,
   dashboard: (facultadId?: number) => ["dashboard", facultadId ?? null] as const,
@@ -38,7 +40,8 @@ export const qk = {
 
 export function useLogin() {
   return useMutation({
-    mutationFn: (d: { email: string; password: string }) => api<RespuestaLogin>("POST", "/auth/login", { json: d, auth: false }),
+    mutationFn: (d: { email: string; password: string }) =>
+      api<RespuestaLogin>("POST", "/auth/login", { json: d, auth: false }),
     // La cookie de sesión la fija el servidor; el token del cuerpo se descarta.
     onSuccess: (s) => iniciarSesion({ usuario: s.usuario }),
   });
@@ -56,14 +59,26 @@ export function useLogout() {
   });
 }
 
-export const useRecuperar = () => useMutation({ mutationFn: (email: string) => api("POST", "/auth/recuperar", { json: { email }, auth: false }) });
+export const useRecuperar = () =>
+  useMutation({
+    mutationFn: (email: string) => api("POST", "/auth/recuperar", { json: { email }, auth: false }),
+  });
 export const useRestablecer = () =>
-  useMutation({ mutationFn: (d: { token: string; password: string }) => api("POST", "/auth/restablecer", { json: d, auth: false }) });
+  useMutation({
+    mutationFn: (d: { token: string; password: string }) =>
+      api("POST", "/auth/restablecer", { json: d, auth: false }),
+  });
 
 export function useRegistro() {
   return useMutation({
-    mutationFn: (d: { nombre: string; email: string; password: string; codigoEstudiante: string; facultadId: number; escuelaId?: number }) =>
-      api<Usuario>("POST", "/auth/registro", { json: d, auth: false }),
+    mutationFn: (d: {
+      nombre: string;
+      email: string;
+      password: string;
+      codigoEstudiante: string;
+      facultadId: number;
+      escuelaId?: number;
+    }) => api<Usuario>("POST", "/auth/registro", { json: d, auth: false }),
   });
 }
 
@@ -83,25 +98,49 @@ export function useMe(enabled: boolean) {
 export function useCambiarPassword() {
   return useMutation({
     // La API renueva la cookie de sesión; las demás sesiones quedan cerradas.
-    mutationFn: (d: { actual: string; nueva: string }) => api<{ token: string }>("POST", "/auth/cambiar-password", { json: d }),
+    mutationFn: (d: { actual: string; nueva: string }) =>
+      api<{ token: string }>("POST", "/auth/cambiar-password", { json: d }),
   });
 }
 
 // --- Catálogo ----------------------------------------------------------------
 
-export const useFacultades = () => useQuery({ queryKey: qk.facultades, queryFn: () => api<Facultad[]>("GET", "/facultades", { auth: false }), staleTime: 300_000 });
+export const useFacultades = () =>
+  useQuery({
+    queryKey: qk.facultades,
+    queryFn: () => api<Facultad[]>("GET", "/facultades", { auth: false }),
+    staleTime: 300_000,
+  });
 
-export const useTipos = (o: { facultadId?: number | undefined; incluirInactivos?: boolean | undefined; enabled?: boolean | undefined } = {}) =>
+export const useTipos = (
+  o: {
+    facultadId?: number | undefined;
+    incluirInactivos?: boolean | undefined;
+    enabled?: boolean | undefined;
+  } = {},
+) =>
   useQuery({
     queryKey: qk.tipos(o.facultadId, o.incluirInactivos),
-    queryFn: () => api<TipoTramite[]>("GET", "/tipos-tramite", { query: { facultadId: o.facultadId, incluirInactivos: o.incluirInactivos } }),
+    queryFn: () =>
+      api<TipoTramite[]>("GET", "/tipos-tramite", {
+        query: { facultadId: o.facultadId, incluirInactivos: o.incluirInactivos },
+      }),
     enabled: o.enabled ?? true,
   });
 
-export const useAreas = (o: { facultadId?: number | undefined; incluirInactivas?: boolean | undefined; enabled?: boolean | undefined } = {}) =>
+export const useAreas = (
+  o: {
+    facultadId?: number | undefined;
+    incluirInactivas?: boolean | undefined;
+    enabled?: boolean | undefined;
+  } = {},
+) =>
   useQuery({
     queryKey: qk.areas(o.facultadId, o.incluirInactivas),
-    queryFn: () => api<Area[]>("GET", "/areas", { query: { facultadId: o.facultadId, incluirInactivos: o.incluirInactivas } }),
+    queryFn: () =>
+      api<Area[]>("GET", "/areas", {
+        query: { facultadId: o.facultadId, incluirInactivos: o.incluirInactivas },
+      }),
     enabled: o.enabled ?? true,
   });
 
@@ -115,7 +154,10 @@ export const useSolicitudes = (f: FiltrosSolicitudes) =>
   });
 
 export const useSolicitud = (codigo: string) =>
-  useQuery({ queryKey: qk.solicitud(codigo), queryFn: () => api<SolicitudDetalle>("GET", `/solicitudes/${encodeURIComponent(codigo)}`) });
+  useQuery({
+    queryKey: qk.solicitud(codigo),
+    queryFn: () => api<SolicitudDetalle>("GET", `/solicitudes/${encodeURIComponent(codigo)}`),
+  });
 
 function useRefrescarSolicitud() {
   const qc = useQueryClient();
@@ -154,7 +196,10 @@ export function useTransicion(s: Pick<SolicitudDetalle, "codigo" | "version">) {
   const refrescar = useRefrescarSolicitud();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (d: DatosTransicion) => api<SolicitudDetalle>("POST", `/solicitudes/${s.codigo}/transiciones`, { json: { ...d, version: s.version } }),
+    mutationFn: (d: DatosTransicion) =>
+      api<SolicitudDetalle>("POST", `/solicitudes/${s.codigo}/transiciones`, {
+        json: { ...d, version: s.version },
+      }),
     onSuccess: refrescar,
     // 409: otra persona cambió la solicitud. Se recarga para mostrar su estado real.
     onError: (e: { status?: number }) => {
@@ -178,7 +223,8 @@ export function useAdjuntar(codigo: string) {
 export function useEnviarMensaje(codigo: string) {
   const refrescar = useRefrescarSolicitud();
   return useMutation({
-    mutationFn: (texto: string) => api<SolicitudDetalle>("POST", `/solicitudes/${codigo}/mensajes`, { json: { texto } }),
+    mutationFn: (texto: string) =>
+      api<SolicitudDetalle>("POST", `/solicitudes/${codigo}/mensajes`, { json: { texto } }),
     onSuccess: refrescar,
   });
 }
@@ -186,7 +232,10 @@ export function useEnviarMensaje(codigo: string) {
 // --- Dashboard y notificaciones ----------------------------------------------
 
 export const useDashboard = (facultadId?: number) =>
-  useQuery({ queryKey: qk.dashboard(facultadId), queryFn: () => api<Dashboard>("GET", "/dashboard", { query: { facultadId } }) });
+  useQuery({
+    queryKey: qk.dashboard(facultadId),
+    queryFn: () => api<Dashboard>("GET", "/dashboard", { query: { facultadId } }),
+  });
 
 export const useNotificaciones = () =>
   useQuery({
@@ -198,20 +247,35 @@ export const useNotificaciones = () =>
 export function useMarcarLeidas() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id?: number) => (id ? api("POST", `/notificaciones/${id}/leida`) : api("POST", "/notificaciones/leer-todas")),
+    mutationFn: (id?: number) =>
+      id ? api("POST", `/notificaciones/${id}/leida`) : api("POST", "/notificaciones/leer-todas"),
     onSuccess: () => qc.invalidateQueries({ queryKey: qk.notificaciones }),
   });
 }
 
 // --- Administración ----------------------------------------------------------
 
-export interface FiltroUsuarios { facultadId?: number | undefined; rol?: Rol | undefined; q?: string | undefined; page?: number | undefined; size?: number | undefined }
+export interface FiltroUsuarios {
+  facultadId?: number | undefined;
+  rol?: Rol | undefined;
+  q?: string | undefined;
+  page?: number | undefined;
+  size?: number | undefined;
+}
 
 export const useUsuariosAdmin = (f: FiltroUsuarios) =>
-  useQuery({ queryKey: qk.usuarios(f), queryFn: () => api<Pagina<Usuario>>("GET", "/admin/usuarios", { query: { ...f } }), placeholderData: keepPreviousData });
+  useQuery({
+    queryKey: qk.usuarios(f),
+    queryFn: () => api<Pagina<Usuario>>("GET", "/admin/usuarios", { query: { ...f } }),
+    placeholderData: keepPreviousData,
+  });
 
 export const useFacultadesAdmin = (enabled = true) =>
-  useQuery({ queryKey: qk.facultadesAdmin, queryFn: () => api<FacultadAdmin[]>("GET", "/admin/facultades"), enabled });
+  useQuery({
+    queryKey: qk.facultadesAdmin,
+    queryFn: () => api<FacultadAdmin[]>("GET", "/admin/facultades"),
+    enabled,
+  });
 
 // Mutación genérica de administración: al terminar invalida todo lo administrable.
 export function useAdmin<V>(fn: (v: V) => Promise<unknown>) {
@@ -219,7 +283,8 @@ export function useAdmin<V>(fn: (v: V) => Promise<unknown>) {
   return useMutation({
     mutationFn: fn,
     onSuccess: () => {
-      for (const k of [["admin"], ["tipos"], ["areas"], ["facultades"]]) void qc.invalidateQueries({ queryKey: k });
+      for (const k of [["admin"], ["tipos"], ["areas"], ["facultades"]])
+        void qc.invalidateQueries({ queryKey: k });
     },
   });
 }

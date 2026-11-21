@@ -49,10 +49,12 @@ function isH3SwallowedErrorBody(body: string): boolean {
 // Así navegador, interfaz, API y cookie de sesión comparten un solo origen.
 // En la VM el gateway nginx atiende /api antes de llegar aquí.
 // ---------------------------------------------------------------------------
-const entorno = (k: string): string | undefined => (typeof process !== "undefined" ? process.env[k] : undefined);
+const entorno = (k: string): string | undefined =>
+  typeof process !== "undefined" ? process.env[k] : undefined;
 // Acepta "http://host:puerto" o solo "host:puerto" (como lo entrega Render con fromService.hostport).
 const apiInterna = entorno("API_INTERNAL_URL");
-const API_INTERNAL_URL = apiInterna && !apiInterna.includes("://") ? `http://${apiInterna}` : apiInterna;
+const API_INTERNAL_URL =
+  apiInterna && !apiInterna.includes("://") ? `http://${apiInterna}` : apiInterna;
 const PRODUCCION = entorno("NODE_ENV") === "production";
 
 async function reenviarApi(request: Request, base: string): Promise<Response> {
@@ -60,8 +62,15 @@ async function reenviarApi(request: Request, base: string): Promise<Response> {
   const headers = new Headers(request.headers);
   headers.delete("host");
   headers.set("x-forwarded-host", entrada.host);
-  headers.set("x-forwarded-proto", request.headers.get("x-forwarded-proto") ?? entrada.protocol.replace(":", ""));
-  const init: RequestInit & { duplex?: "half" } = { method: request.method, headers, redirect: "manual" };
+  headers.set(
+    "x-forwarded-proto",
+    request.headers.get("x-forwarded-proto") ?? entrada.protocol.replace(":", ""),
+  );
+  const init: RequestInit & { duplex?: "half" } = {
+    method: request.method,
+    headers,
+    redirect: "manual",
+  };
   if (request.method !== "GET" && request.method !== "HEAD") {
     init.body = request.body;
     init.duplex = "half";
@@ -76,7 +85,12 @@ async function reenviarApi(request: Request, base: string): Promise<Response> {
   } catch (error) {
     console.error("API no disponible", error);
     return Response.json(
-      { type: "about:blank", title: "API_NO_DISPONIBLE", status: 502, detail: "El servidor de NexusFisi no está disponible. Intenta en unos minutos." },
+      {
+        type: "about:blank",
+        title: "API_NO_DISPONIBLE",
+        status: 502,
+        detail: "El servidor de NEXUS no está disponible. Intenta en unos minutos.",
+      },
       { status: 502, headers: { "content-type": "application/problem+json" } },
     );
   }
@@ -86,8 +100,8 @@ async function reenviarApi(request: Request, base: string): Promise<Response> {
 // se ejecutan los scripts en línea que el propio servidor marcó (sin
 // 'unsafe-inline'). En desarrollo no se aplica, porque Vite inyecta los suyos.
 export function noncesPorPeticion(): WeakMap<Request, string> {
-  const g = globalThis as { __nexusfisiNonces?: WeakMap<Request, string> };
-  return (g.__nexusfisiNonces ??= new WeakMap());
+  const g = globalThis as { __nexusNonces?: WeakMap<Request, string> };
+  return (g.__nexusNonces ??= new WeakMap());
 }
 
 function nonceNuevo(): string {
@@ -126,8 +140,10 @@ function conCabecerasSeguras(response: Response, nonce: string, https: boolean):
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     const url = new URL(request.url);
-    if (API_INTERNAL_URL && url.pathname.startsWith("/api/")) return reenviarApi(request, API_INTERNAL_URL);
-    const https = (request.headers.get("x-forwarded-proto") ?? url.protocol.replace(":", "")) === "https";
+    if (API_INTERNAL_URL && url.pathname.startsWith("/api/"))
+      return reenviarApi(request, API_INTERNAL_URL);
+    const https =
+      (request.headers.get("x-forwarded-proto") ?? url.protocol.replace(":", "")) === "https";
     const nonce = nonceNuevo();
     // El router lo lee asociado a ESTA petición (ver router.tsx). No se clona la
     // petición: TanStack Start necesita el objeto original de su servidor.

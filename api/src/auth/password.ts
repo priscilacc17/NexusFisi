@@ -6,7 +6,8 @@ const COSTO = 11;
 export function validarPassword(password: string): string | null {
   if (password.length < 8) return "La contraseña debe tener al menos 8 caracteres.";
   if (Buffer.byteLength(password, "utf8") > 72) return "La contraseña no puede superar 72 bytes.";
-  if (!/[A-Za-zÁÉÍÓÚÑáéíóúñ]/.test(password) || !/\d/.test(password)) return "La contraseña debe combinar letras y números.";
+  if (!/[A-Za-zÁÉÍÓÚÑáéíóúñ]/.test(password) || !/\d/.test(password))
+    return "La contraseña debe combinar letras y números.";
   return null;
 }
 

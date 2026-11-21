@@ -6,3 +6,12 @@ pnpm-lock.yaml
 package-lock.json
 bun.lock
 routeTree.gen.ts
+
+# Generados / evidencias
+api/drizzle/meta
+perf/resultados
+perf/zap
+e2e/informe
+e2e/test-results
+docs/presentacion
+deploy/observabilidad/grafana/provisioning/dashboards/*.json

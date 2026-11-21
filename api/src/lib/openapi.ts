@@ -11,11 +11,17 @@ export const Problem = z
     title: z.string().openapi({ example: "SOLICITUD_INVALIDA" }),
     status: z.number().int().openapi({ example: 400 }),
     detail: z.string().openapi({ example: "Revisa los campos marcados." }),
-    errors: z.record(z.string(), z.string()).optional().openapi({ example: { asunto: "Mínimo 5 caracteres" } }),
+    errors: z
+      .record(z.string(), z.string())
+      .optional()
+      .openapi({ example: { asunto: "Mínimo 5 caracteres" } }),
   })
   .openapi("Problem");
 
-const problem = (description: string) => ({ description, content: { "application/problem+json": { schema: Problem } } });
+const problem = (description: string) => ({
+  description,
+  content: { "application/problem+json": { schema: Problem } },
+});
 
 export const errores = {
   400: problem("Datos inválidos"),
@@ -42,7 +48,13 @@ export const Prioridad = z.enum(PRIORIDADES).openapi("Prioridad");
 export const TipoCierre = z.enum(TIPOS_CIERRE).openapi("TipoCierre");
 export const Accion = z.enum(ACCIONES).openapi("Accion");
 
-export const IdParam = z.object({ id: z.coerce.number().int().positive().openapi({ param: { name: "id", in: "path" }, example: 1 }) });
+export const IdParam = z.object({
+  id: z.coerce
+    .number()
+    .int()
+    .positive()
+    .openapi({ param: { name: "id", in: "path" }, example: 1 }),
+});
 export const CodigoParam = z.object({
   codigo: z
     .string()
@@ -57,11 +69,18 @@ export const Paginacion = z.object({
 
 export const pagina = <T extends z.ZodType>(item: T, nombre: string) =>
   z
-    .object({ items: z.array(item), total: z.number().int(), page: z.number().int(), size: z.number().int() })
+    .object({
+      items: z.array(item),
+      total: z.number().int(),
+      page: z.number().int(),
+      size: z.number().int(),
+    })
     .openapi(nombre);
 
 export const Ref = z.object({ id: z.number().int(), nombre: z.string() }).openapi("Ref");
-export const FacultadRef = z.object({ id: z.number().int(), codigo: z.string(), nombre: z.string() }).openapi("FacultadRef");
+export const FacultadRef = z
+  .object({ id: z.number().int(), codigo: z.string(), nombre: z.string() })
+  .openapi("FacultadRef");
 
 export const UsuarioPublico = z
   .object({

@@ -20,7 +20,13 @@ export function clientIp(c: Context, trustProxy: boolean): string {
 // `porCuenta` agrega al conteo el correo enviado: en una universidad muchas
 // personas comparten la IP pública del campus, y un límite solo por IP haría
 // que unos bloqueen a otros.
-export function rateLimit(opts: { ventanaMs: number; max: number; trustProxy: boolean; clave: string; porCuenta?: boolean }) {
+export function rateLimit(opts: {
+  ventanaMs: number;
+  max: number;
+  trustProxy: boolean;
+  clave: string;
+  porCuenta?: boolean;
+}) {
   const hits = new Map<string, { n: number; reinicio: number }>();
   return createMiddleware(async (c, next) => {
     const ahora = Date.now();
@@ -35,7 +41,11 @@ export function rateLimit(opts: { ventanaMs: number; max: number; trustProxy: bo
       hits.set(key, { n: 1, reinicio: ahora + opts.ventanaMs });
     } else if (++h.n > opts.max) {
       c.header("Retry-After", String(Math.ceil((h.reinicio - ahora) / 1000)));
-      throw new AppError(429, "DEMASIADAS_PETICIONES", "Demasiados intentos. Espera un momento antes de volver a intentar.");
+      throw new AppError(
+        429,
+        "DEMASIADAS_PETICIONES",
+        "Demasiados intentos. Espera un momento antes de volver a intentar.",
+      );
     }
     if (hits.size > 10_000) for (const [k, v] of hits) if (v.reinicio <= ahora) hits.delete(k);
     await next();

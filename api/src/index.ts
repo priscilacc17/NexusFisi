@@ -11,7 +11,10 @@ import { seed } from "./db/seed.js";
 
 const env = loadEnv();
 const logger = createLogger(env);
-const database = createDatabase(env.DATABASE_URL, env.DATABASE_SSL ? { ca: env.DATABASE_SSL_CA } : undefined);
+const database = createDatabase(
+  env.DATABASE_URL,
+  env.DATABASE_SSL ? { ca: env.DATABASE_SSL_CA } : undefined,
+);
 
 if (env.MIGRATE_ON_START) {
   await runMigrations(database.db);
@@ -29,7 +32,9 @@ if (env.SEED_DEMO_ON_START) {
 }
 
 const app = createApp(deps);
-const server = serve({ fetch: app.fetch, port: env.PORT }, (info) => logger.info({ port: info.port }, "NexusFisi API escuchando"));
+const server = serve({ fetch: app.fetch, port: env.PORT }, (info) =>
+  logger.info({ port: info.port }, "NEXUS API escuchando"),
+);
 
 const apagar = (senal: string) => {
   logger.info({ senal }, "apagando");

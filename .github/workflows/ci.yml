@@ -70,6 +70,8 @@ jobs:
       - run: bun install --frozen-lockfile
       - name: Chequeo de tipos
         run: npx tsc --noEmit
+      - name: Lint y formato (ESLint + Prettier, interfaz y API)
+        run: npx eslint . && npx prettier --check .
       - name: Pruebas
         run: npx vitest run
       - name: Build (servidor Node para Docker)
@@ -106,3 +108,52 @@ jobs:
           push: false
           cache-from: type=gha,scope=render
           cache-to: type=gha,mode=max,scope=render
+
+  e2e:
+    name: Aceptación · Playwright sobre la imagen completa
+    needs: [api, web]
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: root_ci
+          MYSQL_DATABASE: nexusfisi
+          MYSQL_USER: nexusfisi
+          MYSQL_PASSWORD: nexusfisi_ci
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -proot_ci --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Construir la imagen de producción (Render)
+        run: docker build -f Dockerfile.render -t nexus:ci .
+      - name: Levantar la aplicación con datos demo
+        run: |
+          docker run -d --name app --network host             -e PORT=8080 -e PUBLIC_URL=http://localhost:8080 -e COOKIE_SECURE=false             -e DATABASE_URL=mysql://nexusfisi:nexusfisi_ci@127.0.0.1:3306/nexusfisi             -e JWT_SECRET=clave-de-ci-solo-para-pruebas-de-aceptacion-0123456789             -e SEED_DEMO_ON_START=true -e AUTH_RATE_LIMIT=200 nexus:ci
+          for i in $(seq 1 60); do curl -fsS http://localhost:8080/api/v1/health && exit 0; sleep 3; done
+          docker logs app; exit 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: e2e/package-lock.json
+      - name: Instalar Playwright
+        working-directory: e2e
+        run: npm ci && npx playwright install --with-deps chromium
+      - name: Pruebas de aceptación
+        working-directory: e2e
+        env:
+          BASE_URL: http://localhost:8080
+        run: npx playwright test
+      - name: Logs de la aplicación si algo falló
+        if: failure()
+        run: docker logs app | tail -200
+      - name: Guardar el informe de Playwright
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-playwright
+          path: e2e/informe
+          retention-days: 14

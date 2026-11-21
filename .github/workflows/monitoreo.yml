@@ -1,0 +1,39 @@
+# Monitoreo sintético de producción: cada 10 minutos consulta /api/v1/health.
+# Si falla tres veces seguidas el job termina en error y GitHub avisa por correo
+# a quien tenga activadas las notificaciones de Actions. De paso evita que el
+# plan gratuito de Render duerma el servicio en horario de atención.
+name: Monitoreo
+
+on:
+  schedule:
+    - cron: "*/10 11-23 * * 1-6" # 6:00–18:59 de Lima, lunes a sábado (UTC-5)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  salud:
+    name: Salud de producción
+    runs-on: ubuntu-latest
+    environment: produccion
+    timeout-minutes: 5
+    steps:
+      - name: Consultar /api/v1/health
+        env:
+          URL: ${{ vars.PUBLIC_URL }}
+        run: |
+          if [ -z "$URL" ]; then echo "::warning::Define la variable PUBLIC_URL del entorno produccion."; exit 0; fi
+          for i in 1 2 3; do
+            inicio=$(date +%s%3N)
+            cuerpo=$(curl -fsS --max-time 60 "$URL/api/v1/health" || true)
+            ms=$(( $(date +%s%3N) - inicio ))
+            if echo "$cuerpo" | grep -q '"status":"ok"'; then
+              echo "OK en ${ms} ms: $cuerpo"
+              echo "### Producción OK (${ms} ms)" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            echo "Intento $i falló (${ms} ms): $cuerpo"; sleep 20
+          done
+          echo "::error::INCIDENTE: $URL/api/v1/health no responde o la base de datos no está disponible"
+          exit 1

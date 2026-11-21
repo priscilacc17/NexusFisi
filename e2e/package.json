@@ -1,0 +1,13 @@
+{
+  "name": "nexus-e2e",
+  "private": true,
+  "type": "module",
+  "description": "Pruebas funcionales y de aceptación de punta a punta (navegador real) de NEXUS",
+  "scripts": {
+    "test": "playwright test",
+    "informe": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.1"
+  }
+}

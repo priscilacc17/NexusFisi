@@ -1,0 +1,14 @@
+# Actualizaciones de seguridad semanales: dependencias npm y versiones de las
+# acciones de GitHub (Semgrep advierte que las etiquetas @v4 son mutables).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: weekly }
+  - package-ecosystem: npm
+    directory: /api
+    schedule: { interval: weekly }
+    open-pull-requests-limit: 5
+  - package-ecosystem: npm
+    directory: /e2e
+    schedule: { interval: monthly }
