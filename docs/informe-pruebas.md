@@ -70,12 +70,12 @@ Evidencia: [informe de Playwright](evidencias/fase4/playwright-informe.png).
 - **Responsive:** [`e2e/tests/responsive.spec.ts`](../e2e/tests/responsive.spec.ts) abre la aplicación en un Pixel 7 y comprueba que el menú lateral se convierte en menú desplegable y que la navegación funciona. ✅
 - **Recorrido guiado por rol:** cada integrante recorre el sistema con una cuenta de demostración siguiendo el [manual de usuario](manual-usuario.md) y anota lo que le resultó confuso. Las observaciones de usabilidad de las fases anteriores (orden de la bandeja, mensajes de error por campo, confirmación antes de acciones irreversibles) ya están incorporadas.
 
-  | Rol           | Cuenta                         | Integrante | Tareas completadas sin ayuda                    | Observaciones |
-  | ------------- | ------------------------------ | ---------- | ----------------------------------------------- | ------------- |
-  | Estudiante    | `estudiante.fisi@unmsm.edu.pe` |            | Registrar, corregir, descargar, dar conformidad |               |
-  | Supervisor    | `supervisor.fisi@unmsm.edu.pe` |            | Evaluar, observar, asignar, cerrar              |               |
-  | Técnico       | `tecnico.fisi@unmsm.edu.pe`    |            | Iniciar atención, adjuntar, resolver            |               |
-  | Administrador | `admin.central@unmsm.edu.pe`   |            | Crear usuario, tipo de trámite y área           |               |
+  | Rol           | Cuenta                         | Integrante         | Tareas completadas sin ayuda                    | Observaciones |
+  | ------------- | ------------------------------ | ------------------ | ----------------------------------------------- | ------------- |
+  | Estudiante    | `estudiante.fisi@unmsm.edu.pe` | Ashley Bayona      | Registrar, corregir, descargar, dar conformidad |               |
+  | Supervisor    | `supervisor.fisi@unmsm.edu.pe` | Priscila Carrascal | Evaluar, observar, asignar, cerrar              |               |
+  | Técnico       | `tecnico.fisi@unmsm.edu.pe`    | Frank Maylle       | Iniciar atención, adjuntar, resolver            |               |
+  | Administrador | `admin.central@unmsm.edu.pe`   | Alberto Gil        | Crear usuario, tipo de trámite y área           |               |
 
 - **Accesibilidad básica:** los formularios usan `<label>` asociados y los botones tienen nombre accesible; las pruebas E2E los localizan por rol y nombre (`getByRole`), lo que falla si se pierde la etiqueta.
 
