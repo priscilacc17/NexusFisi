@@ -20,7 +20,7 @@
     "test:integration": "vitest run test/integration"
   },
   "dependencies": {
-    "@hono/node-server": "^2.1.8",
+    "@hono/node-server": "^2.1.9",
     "@hono/swagger-ui": "^0.6.2",
     "@hono/zod-openapi": "^1.6.3",
     "@opentelemetry/api": "^1.10.0",
