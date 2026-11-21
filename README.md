@@ -6,7 +6,7 @@ Cada facultad tiene su propio catálogo de trámites, sus áreas responsables, s
 
 > **El nombre:** NEXUS es la sigla de **N**úcleo de **EX**pediente **Ú**nico **S**anmarquino: un solo expediente digital por trámite, para todas las facultades. El proyecto empezó como «NexusFisi», centrado en la FISI; el repositorio y la URL de la demostración conservan ese nombre.
 >
-> Proyecto del curso _Taller de Construcción de Software Web_ — propuesta «TrámiteUni» adaptada a la UNMSM. El enunciado está en [`docs/presentacion/`](docs/presentacion/).
+> Proyecto del curso _Taller de Construcción de Software Web_ — propuesta «TrámiteUni» adaptada a la UNMSM. El enunciado está en [`docs/presentacion/anteriores/`](docs/presentacion/anteriores/).
 >
 > La interfaz se generó inicialmente con Lovable y el repositorio sigue conectado a su editor, pero **la aplicación no depende de Lovable para funcionar ni para desplegarse**: se construye como imágenes Docker y corre en Render o en cualquier servidor con Docker.
 
